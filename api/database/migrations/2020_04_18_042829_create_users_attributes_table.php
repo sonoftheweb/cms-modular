@@ -13,8 +13,9 @@ class CreateUsersAttributesTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_attribute', function (Blueprint $table) {
+        Schema::create('users_attributes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('user_job_title')->nullable();
             $table->string('user_job_description')->nullable();
             $table->text('profile_picture')->nullable();

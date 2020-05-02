@@ -99,6 +99,8 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/vlucas/phpdotenv" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/voku/portable-ascii" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/public" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
