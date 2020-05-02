@@ -96,6 +96,7 @@
       <path value="$PROJECT_DIR$/api/vendor/sebastian/diff" />
       <path value="$PROJECT_DIR$/api/vendor/sebastian/type" />
       <path value="$PROJECT_DIR$/api/vendor/laravel/sanctum" />
+      <path value="$PROJECT_DIR$/api/vendor/nwidart/laravel-modules" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.2" />
