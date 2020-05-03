@@ -2,22 +2,22 @@
 
 namespace App\Http\Middleware;
 
-use App\Helpers\InstanceHelper;
+use App\Helpers\ResponseHelper;
 use Closure;
 
-class Instance
+class ResponseInRequest
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
-     * @return mixedb
+     * @return mixed
      */
     public function handle($request, Closure $next)
     {
-        // get and load the instance in the call
-        InstanceHelper::getInstance();
+        $resp = new ResponseHelper();
+        $request->request->add(['response_helper' => $resp]);
         return $next($request);
     }
 }

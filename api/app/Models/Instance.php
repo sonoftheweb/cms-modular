@@ -2,8 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasUsersTrait;
+use Laravel\Cashier\Billable;
+
 class Instance extends SimpleModel
 {
+    use HasUsersTrait, Billable;
+
     protected $fillable = [
         'instance_name',
         'account_manager_user_id',
@@ -18,9 +23,4 @@ class Instance extends SimpleModel
         'direct_phone',
         'direct_email'
     ];
-
-    public function users()
-    {
-        return $this->hasMany(User::class, 'instance_id');
-    }
 }

@@ -13,6 +13,7 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/doctrine/inflector" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/doctrine/instantiator" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/doctrine/lexer" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/dompdf/dompdf" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/dragonmantank/cron-expression" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/egulias/email-validator" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/facade/flare-client-php" />
@@ -26,12 +27,14 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/guzzlehttp/promises" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/guzzlehttp/psr7" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/hamcrest/hamcrest-php" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/laravel/cashier" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/laravel/framework" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/laravel/sanctum" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/laravel/tinker" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/league/commonmark" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/league/flysystem" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/mockery/mockery" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/moneyphp/money" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/monolog/monolog" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/myclabs/deep-copy" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/nesbot/carbon" />
@@ -41,6 +44,8 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/opis/closure" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/phar-io/manifest" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/phar-io/version" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/phenx/php-font-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/phenx/php-svg-lib" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/phpdocumentor/reflection-common" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/phpdocumentor/reflection-docblock" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/phpdocumentor/type-resolver" />
@@ -61,6 +66,7 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/ralouphie/getallheaders" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/ramsey/collection" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/ramsey/uuid" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/sabberworm/php-css-parser" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/scrivo/highlight.php" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/sebastian/code-unit-reverse-lookup" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/sebastian/comparator" />
@@ -74,6 +80,7 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/sebastian/resource-operations" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/sebastian/type" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/sebastian/version" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/stripe/stripe-php" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/swiftmailer/swiftmailer" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/console" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/css-selector" />
@@ -83,9 +90,11 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/finder" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/http-foundation" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/http-kernel" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/intl" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/mime" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-ctype" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-iconv" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-intl-icu" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-intl-idn" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-mbstring" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-php72" />

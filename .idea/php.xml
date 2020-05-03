@@ -97,6 +97,15 @@
       <path value="$PROJECT_DIR$/api/vendor/sebastian/type" />
       <path value="$PROJECT_DIR$/api/vendor/laravel/sanctum" />
       <path value="$PROJECT_DIR$/api/vendor/nwidart/laravel-modules" />
+      <path value="$PROJECT_DIR$/api/vendor/stripe/stripe-php" />
+      <path value="$PROJECT_DIR$/api/vendor/laravel/cashier" />
+      <path value="$PROJECT_DIR$/api/vendor/moneyphp/money" />
+      <path value="$PROJECT_DIR$/api/vendor/dompdf/dompdf" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/intl" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-intl-icu" />
+      <path value="$PROJECT_DIR$/api/vendor/sabberworm/php-css-parser" />
+      <path value="$PROJECT_DIR$/api/vendor/phenx/php-font-lib" />
+      <path value="$PROJECT_DIR$/api/vendor/phenx/php-svg-lib" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.2" />

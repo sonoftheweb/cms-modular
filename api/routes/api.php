@@ -23,9 +23,7 @@ Route::group(['prefix' => 'auth'], function () {
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'protected_api']], function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::get('me', 'UserController@me');
 });
 
 Route::fallback(function(){

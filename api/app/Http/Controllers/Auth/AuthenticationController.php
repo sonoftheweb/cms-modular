@@ -41,22 +41,28 @@ class AuthenticationController extends Controller
 
         // Create the instance
         $instance = Instance::create([
-            'instance_name' => $request->instance_name
+            'instance_name' => $request->instance_name,
+            'direct_email' => $request->email,
         ]);
 
         // Create the user
-        $user = User::create([
-            'instance_id' => $instance->id,
+        $user = $instance->users()->create([
             'role_id' => Config::get('constants.roles.account_manager'),
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
         $user->attribute()->create([]);
 
         // update instance with the new account info
         $instance->account_manager_user_id = $user->id;
         $instance->save();
+
+        $instance->createAsStripeCustomer([
+            'email' => $instance->direct_email,
+            'name' => $instance->instance_name
+        ]);
 
         $token = $user->createToken('auth-token')->plainTextToken;
 

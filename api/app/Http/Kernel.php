@@ -48,6 +48,8 @@ class Kernel extends HttpKernel
 
         'protected_api' => [
             \App\Http\Middleware\Instance::class,
+            \App\Http\Middleware\ResponseInRequest::class,
+            \App\Http\Middleware\SubscriptionCheck::class,
         ]
     ];
 
