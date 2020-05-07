@@ -10,7 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class AuthenticationController extends Controller
@@ -64,7 +66,7 @@ class AuthenticationController extends Controller
             'name' => $instance->instance_name
         ]);
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $user->createToken('auth-token')->accessToken;
 
         return response([
             'token' => $token
@@ -76,12 +78,24 @@ class AuthenticationController extends Controller
         if (Auth::attempt($request->except('remember_me'), $request->remember_me)) {
             $user = Auth::user();
              return response([
-                 'token' => $user->createToken('auth-token')->plainTextToken
+                 'token' => $user->createToken('auth-token')->accessToken
              ]);
         } else {
             return response([
                 'message' => 'User not found'
             ], 401);
         }
+    }
+
+    public function logout()
+    {
+        if (!Auth::check())
+            return response(['message' => 'Access denied for this operation.'], 404);
+
+        DB::table('oauth_access_token')->where('user_id', Auth::id())->delete();
+        Session::flush();
+        return response([
+            'message' => 'User logged out.'
+        ]);
     }
 }

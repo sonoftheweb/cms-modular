@@ -74,7 +74,7 @@ class ResponseHelper
 
     public function respondWithSuccessMessage($statusCode, $response)
     {
-        // $reponse is usually a string but could be an array
+        // $response is usually a string but could be an array
         switch (gettype($response)) {
             case "array":
                 return $this->setStatusCode($statusCode)->respond(array_merge([

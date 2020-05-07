@@ -19,40 +19,32 @@
 </template>
 
 <script>
-    import {mapGetters} from 'vuex';
+	export default {
+		data: () => ({
+			mini: false,
+			drawer: null,
+			items: []
+		}),
+		methods: {
+			toLink(link) {
+				if (link) {
+					this.$router.push(link);
+				}
+			}
+		},
+		mounted() {
+			this.$eventBus.$on('toggle-menu', () => {
+				this.drawer = !this.drawer;
+			});
 
-    export default {
-        computed: {
-            ...mapGetters(["menuData"])
-        },
-        data: () => ({
-            mini: false,
-            drawer: null,
-            items: []
-        }),
-        methods: {
-            toLink(link) {
-                if (link) {
-                    this.$router.push(link);
-                }
-            }
-        },
-        mounted() {
-            this.$root.$on('toggle-menu', () => {
-                this.drawer = !this.drawer;
-            });
-
-            this.$router.options.routes.forEach(route => {
-                this.items.push({
-                    name: route.name,
-                    path: route.path,
-                    icon: route.meta.icon
-                })
-            })
-        }
-    }
+			this.$router.options.routes.forEach(route => {
+				if (Object.prototype.hasOwnProperty.call(route.meta, 'inMenu'))
+					this.items.push({
+						name: route.name,
+						path: route.path,
+						icon: route.meta.icon
+					})
+			})
+		}
+	}
 </script>
-
-<style scoped>
-
-</style>

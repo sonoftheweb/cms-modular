@@ -65,9 +65,13 @@
       login() {
         // validate form entry
         if (this.$refs.form.validate()) {
-          this.$http.post('/api/auth/login', this.auth)
-          .then(response => {
-            console.log(response)
+          this.$http.post('/api/auth/login', this.auth).then(response => {
+            this.$store.dispatch('loggedIn', response.data.token).then(async () => {
+              await this.$store.dispatch("fetchUserData")
+              await this.$router.push('/home');
+            })
+          }).catch(err => {
+            console.log('do something here', err);
           })
         }
       }

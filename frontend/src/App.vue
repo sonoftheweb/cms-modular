@@ -31,5 +31,10 @@ export default {
   data: () => ({
     alertData: {}
   }),
+  mounted() {
+    this.$eventBus.$on('alert', alertData => {
+      this.alertData = alertData
+    })
+  }
 };
 </script>

@@ -2,33 +2,28 @@ import Vue from 'vue'
 import lodash from 'lodash'
 import axios from 'axios'
 import Cookies from 'js-cookie'
-import * as router from 'vue-router'
-import v_router from 'vue-router'
-import store from './store'
+import router from './router/router'
+import store from './store/index'
 
-const eventBus = new Vue();
+const $eventBus = new Vue();
 
 axios.defaults.baseURL = 'http://api.fortcon.local'
 axios.defaults.withCredentials = true
 
 Vue.prototype.$http = axios
-Vue.prototype.$bus = eventBus;
+Vue.prototype.$eventBus = $eventBus;
 Vue.prototype._ = lodash
-
-axios.get("/sanctum/csrf-cookie").then(response => {
-    console.log(response);
-})
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 axios.defaults.withCredentials = true
 
 axios.interceptors.request.use(config => {
     // when a request is sent
-    eventBus.$emit('toggle-loading', true)
+    $eventBus.$emit('toggle-loading', true)
 
     // If token exist as a cookie add it to request
     if (Cookies.get('token')) {
-        config.headers.common['Authorization'] = Cookies.get('token')
+        config.headers.common['Authorization'] = 'Bearer ' + Cookies.get('token')
     }
 
     return config
@@ -38,12 +33,24 @@ axios.interceptors.request.use(config => {
 
 axios.interceptors.response.use(response => {
     // request yielded a response, hide the loading bar
-    eventBus.$emit('toggle-loading', false )
+    $eventBus.$emit('toggle-loading', false )
+
+    // if error.response.status is 404 and the message states that the account has no subscription
+    if (Object.prototype.hasOwnProperty.call(response.data, 'error_type') && response.data.error_type === 'has_no_subscription') {
+        // take them to the subscription page and to complete subscription payment
+        store.commit('subscribed', false)
+        router.push('/subscription')
+        $eventBus.$emit('toggle-menu')
+        $eventBus.$emit('alert', {
+            status: 'warning',
+            message: 'Your account does not have a plan associated with it. To use FortCon, you will need to subscribe to a plan. Review the plans below and select the plan that suites your needs.'
+        })
+    }
 
     return response
 }, error => {
     // request yielded a response (error), hide the loading bar
-    eventBus.$emit('toggle-loading', false )
+    $eventBus.$emit('toggle-loading', false )
 
     let data = error.response.data
 
@@ -53,16 +60,10 @@ axios.interceptors.response.use(response => {
         console.log('show "please contact admin"')
     }
 
-    // if error.response.status is 400 and the message states that the account has no subscription
-    if (error.response.status === 404 && Object.prototype.hasOwnProperty.call(data, 'no-subscription') && !['subscription'].includes(v_router.name)) {
-        // take them to the subscription page and to complete subscription payment
-        console.log('go to subscription page')
-    }
-
     // you do not have access to the application hence we clean all cookies and log you out
     if (error.response.status === 401) {
         store.dispatch('loggedOut').then(() => {
-            router.push("/login")
+            window.location.replace("/")
         })
         return
     }

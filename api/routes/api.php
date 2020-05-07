@@ -22,7 +22,17 @@ Route::group(['prefix' => 'auth'], function () {
     });
 });
 
-Route::group(['middleware' => ['auth:sanctum', 'protected_api']], function () {
+Route::group(['prefix' => 'payment', 'middleware' => ['auth:api', 'response_in_request']], function () {
+    Route::get('plans', 'PaymentController@getPlans');
+    Route::get('payment_methods', 'PaymentController@getPaymentMethod');
+    Route::get('intent', 'PaymentController@getIntent');
+    Route::post('savePaymentMethod', 'PaymentController@savePaymentMethod');
+    Route::get('paymentIntent', 'PaymentController@paymentIntent');
+    Route::post('subscribe', 'PaymentController@subscribe');
+});
+
+Route::group(['middleware' => ['auth:api', 'protected_api']], function () {
+    Route::post('auth/logout', 'Auth\AuthenticationController@logout');
     Route::get('me', 'UserController@me');
 });
 

@@ -25,7 +25,7 @@ class SubscriptionCheck
             return response([
                 'message' => 'This account has no subscription... Please subscribe to a plan now.',
                 'error_type' => 'has_no_subscription'
-            ], 404);
+            ], 200);
         }
     }
 }
