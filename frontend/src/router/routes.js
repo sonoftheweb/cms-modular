@@ -19,7 +19,13 @@ export default [
         path: '/home',
         name: 'home',
         component: Home,
-        meta: { icon: 'mdi-view-dashboard-outline', displayableName: 'Dashboard', inMenu: true }
+        meta: { icon: 'mdi-view-dashboard-outline', displayableName: 'Dashboard', inMenu: true },
+        children: [{
+            name: 'home.task-dash',
+            path: 'tasks',
+            component: Home,
+            meta: { icon: 'mdi-calendar-check-outline', displayableName: 'Task Dashboard', inMenu: true },
+        }]
     },
     {
         path: '/contracts',

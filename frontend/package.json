@@ -41,7 +41,8 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "vue/no-v-html": "warn"
+      "vue/no-v-html": "warn",
+      "vue/no-use-v-if-with-v-for": "warn"
     }
   },
   "browserslist": [

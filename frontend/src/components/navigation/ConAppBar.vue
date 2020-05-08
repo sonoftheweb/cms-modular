@@ -25,10 +25,27 @@
 		/>
 		
 		<v-spacer/>
-		
-		<v-avatar class="ml-3 mr-2" color="indigo" size="24">
-			<v-icon dark>mdi-account-circle</v-icon>
-		</v-avatar>
+
+		<v-menu offset-y>
+			<template v-slot:activator="{ on }">
+				<v-btn text class="mr-5" v-on="on">
+					<div class="body-2">{{ user.name }}</div>
+					<v-avatar class="ml-3" color="indigo" size="24">
+						<v-icon dark>mdi-account-circle</v-icon>
+					</v-avatar>
+				</v-btn>
+			</template>
+			<v-list>
+				<v-list-item>
+					<v-list-item-title>Profile</v-list-item-title>
+				</v-list-item>
+				<v-list-item>
+					<v-list-item-title>Subscription</v-list-item-title>
+				</v-list-item>
+			</v-list>
+		</v-menu>
+
+
 		<v-btn icon dark small class="mx-1 indigo lighten-1" @click.stop="logout">
 			<v-icon small>mdi-location-exit</v-icon>
 		</v-btn>
@@ -36,7 +53,12 @@
 </template>
 
 <script>
+	import {mapGetters} from 'vuex'
+
 	export default {
+		computed: {
+			...mapGetters(['user'])
+		},
 		data() {
 			return {
 				isLoading: false
