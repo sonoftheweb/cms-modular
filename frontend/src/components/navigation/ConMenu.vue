@@ -1,7 +1,7 @@
 <template>
 	<v-navigation-drawer v-model="drawer" dark :mini-variant="mini" app clipped color="indigo darken-4">
-		<v-list dense class="indigo darken-4 mt-10">
-			<v-list-item v-for="(item, i) in items" :key="i" @click="toLink(item.path)">
+		<v-list dense class="indigo darken-4 mt-10" nav>
+			<v-list-item v-for="(item, i) in items" :key="i" @click="toLink(item.path)" link>
 				<v-list-item-action>
 					<v-icon>{{ item.icon }}</v-icon>
 				</v-list-item-action>

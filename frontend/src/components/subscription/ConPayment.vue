@@ -83,13 +83,13 @@
     computed: {
       ...mapGetters(['priceFormatted', 'emailValidationRules', 'requiredFieldRule']),
       computedPrice() {
-        let price = this.selectedPlan.tiers[0].unit_amount / 100;
+        let price = this.selectedPlan.tiers[0].unit_amount / 100
         if (this.paymentMethodData.seats > this.selectedPlan.tiers[0].up_to) {
-          price += (this.selectedPlan.tiers[1].unit_amount / 100) * (this.paymentMethodData.seats - this.selectedPlan.tiers[0].up_to);
+          price += (this.selectedPlan.tiers[1].unit_amount / 100) * (this.paymentMethodData.seats - this.selectedPlan.tiers[0].up_to)
         } else {
-          price = this.selectedPlan.tiers[0].unit_amount / 100;
+          price = this.selectedPlan.tiers[0].unit_amount / 100
         }
-        return price;
+        return price
       }
     },
     data() {
@@ -133,7 +133,7 @@
         this.$emit('close_payment_dialog')
       },
       getIntent() {
-        this.loading = true;
+        this.loading = true
         this.$http.get('/api/payment/intent').then((response) => {
           this.paymentIntent = response.data.intent
           this.loading = false
@@ -153,9 +153,9 @@
         this.card.addEventListener('change', ({error}) => {
           const displayError = document.getElementById('card-errors')
           if (error) {
-            displayError.textContent = error.message;
+            displayError.textContent = error.message
           } else {
-            displayError.textContent = '';
+            displayError.textContent = ''
           }
         })
       },
@@ -167,46 +167,40 @@
               payment_method: {
                 card: this.card,
                 billing_details: {
-                  name: this.paymentMethodData.name
+                  name: this.paymentMethodData.name,
+                  email: this.paymentMethodData.email
                 }
               }
             }
           )
 
           if (error) {
-            this.loading = false;
+            this.loading = false
           } else {
             // complete the subscription process
             let data = {
-              payment_method: setupIntent.payment_method,
-            };
+              pm: setupIntent.payment_method,
+            }
 
-            this.$http.post('/api/payment/savePaymentMethod', data).then(response => {
-              this.paymentMethods = response.data.data.payment_methods;
+            this.$http.post('/api/payment/save_payment_method', data).then(response => {
+              this.paymentMethods = response.data.pm
               let data = {
                 pm: this.paymentMethods[0],
                 plan: this.selectedPlan.nickname,
                 seat_count: this.paymentMethodData.seats
-              };
+              }
 
               this.$http.post('/api/payment/subscribe', data)
                 .then(response => {
-                  this.loading = false;
-                  this.$eventBus.$emit('alert', response.data);
+                  this.loading = false
+                  this.$eventBus.$emit('alert', response.data)
                   this.$store.dispatch("fetchUserData").then(() => {
-                    this.loading = false;
-                    this.$router.push('/dashboard');
-                  });
-                }).catch(() => {
-                this.loading = false;
-                this.$eventBus.$emit('alert', {
-                  displayAlert: 'error',
-                  message: 'Something went bang! Contact support ASAP!'
+                    this.loading = false
+                    this.$router.push('/home')
+                  })
                 })
-              });
-
-              this.loading = false;
-            });
+              this.loading = false
+            })
           }
         }
       }
@@ -215,7 +209,7 @@
       this.stripe = Stripe(process.env.VUE_APP_STRIPE_KEY)
       this.elements = this.stripe.elements()
       this.card = this.elements.create('card')
-      this.getIntent();
+      this.getIntent()
     }
   }
 </script>

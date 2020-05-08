@@ -61,13 +61,12 @@ class StripeHelper
 
     public static function instanceHasPlan ()
     {
-        $instance = InstanceHelper::getInstance();
-        $plans = Cache::remember('all_plans_in_db', env('CACHE_TIME_ONE_HOUR'), function () {
-            $p = \App\Models\Plan::select('stripe_plan_identifier')->get()->toArray();
-            return array_values($p);
-        });
+        $plans = \App\Models\Plan::all()->toArray();
+        $plans = array_map(function ($plan) {
+            return $plan['stripe_plan_identifier'];
+        }, $plans);
 
-        return $instance->subscribedToPlan($plans, 'default');
+        return InstanceHelper::getInstance()->subscribedToPlan($plans, 'default');
     }
 
     public static function toStripeAmountFormat(float $priceInDollars): int

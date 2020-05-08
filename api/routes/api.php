@@ -26,7 +26,7 @@ Route::group(['prefix' => 'payment', 'middleware' => ['auth:api', 'response_in_r
     Route::get('plans', 'PaymentController@getPlans');
     Route::get('payment_methods', 'PaymentController@getPaymentMethod');
     Route::get('intent', 'PaymentController@getIntent');
-    Route::post('savePaymentMethod', 'PaymentController@savePaymentMethod');
+    Route::post('save_payment_method', 'PaymentController@savePaymentMethod');
     Route::get('paymentIntent', 'PaymentController@paymentIntent');
     Route::post('subscribe', 'PaymentController@subscribe');
 });

@@ -36,7 +36,7 @@ class PaymentController extends Controller
 
         $data = [
             'count' => count($paymentMethods),
-            'payment_methods' => $paymentMethods
+            'pm' => $paymentMethods
         ];
 
         return $request->response_helper->respond($data);
@@ -57,7 +57,7 @@ class PaymentController extends Controller
      */
     public function savePaymentMethod(Request $request)
     {
-        InstanceHelper::getInstance()->addPaymentMethod($request->payment_method);
+        InstanceHelper::getInstance()->addPaymentMethod($request->pm);
         return $this->getPaymentMethod($request);
     }
 
@@ -75,7 +75,7 @@ class PaymentController extends Controller
             $instance = InstanceHelper::getInstance();
 
             //get plan by nickname
-            $plan = Plan::findWhere('nickname', $plan)->toArray();
+            $plan = Plan::where('nickname', $plan)->first()->toArray();
 
             $subscriptionBuilder = $instance->newSubscription('default', $plan['stripe_plan_identifier'])->withMetadata([
                 'account_name' => $instance->instance_name,

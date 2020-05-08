@@ -9,6 +9,7 @@
               <v-form ref="form" lazy-validation class="mr-1">
                 <v-text-field
                   v-model="auth.email"
+                  type="email"
                   label="Email address"
                   placeholder="email@example.com"
                   prepend-inner-icon="mdi-at"
