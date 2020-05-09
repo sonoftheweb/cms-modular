@@ -33,6 +33,11 @@ export default new Vuex.Store({
             return price => {
                 return new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(price);
             }
+        },
+        firstLetterCaps: () => {
+            return string => {
+                return string.charAt(0).toUpperCase() + string.slice(1)
+            }
         }
     }
 })

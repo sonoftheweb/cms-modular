@@ -30,7 +30,7 @@
 			} else {
 				for (let i = 0; i < this.$route.matched.length; i++) {
 					this.items.push({
-						text: this.$route.matched[i].name,
+						text: this.$route.matched[i].name.replace('-', ' '),
 						disabled: this.$route.matched.length - 1 === i,
 						to: this.$route.matched[i].path
 					});

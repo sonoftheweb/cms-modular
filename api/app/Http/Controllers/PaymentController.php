@@ -5,11 +5,18 @@ namespace App\Http\Controllers;
 use App\Helpers\InstanceHelper;
 use App\Http\Resources\PlanCollection;
 use App\Models\Plan;
+use http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
+    /**
+     * Get's all plans in DB
+     *
+     * @param Request $request
+     * @return mixed
+     */
     public function getPlans(Request $request)
     {
         return $request->response_helper->respond(new PlanCollection(Plan::all()));
@@ -42,6 +49,12 @@ class PaymentController extends Controller
         return $request->response_helper->respond($data);
     }
 
+    /**
+     * Creates a new intent for saving payment method
+     *
+     * @param Request $request
+     * @return mixed
+     */
     public function getIntent(Request $request)
     {
         return $request->response_helper->respond([
@@ -83,7 +96,7 @@ class PaymentController extends Controller
                 'account_seats' => $seats
             ]);
 
-            if(!$instance->subscribed('default')){
+            if (!$instance->subscribed('default')){
                 $subscriptionBuilder->quantity($seats)->create($paymentMethod['id']);
             }
             else {
@@ -99,5 +112,57 @@ class PaymentController extends Controller
             return $request->response_helper->respondWithError($e);
         }
 
+    }
+
+    /**
+     * Pulls in the current instance's subscription
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function getSubscriptionData(Request $request)
+    {
+        return $request->response_helper->respond([
+            'all_subscriptions' => array_filter(InstanceHelper::getInstance()->getSubscriptions(), function ($subs) {
+                return $subs['status'] !== 'active';
+            }),
+            'subscription' => InstanceHelper::getInstance()->getSubscription()
+        ]);
+    }
+
+    public function cancelSubscription(Request $request)
+    {
+        $instance = InstanceHelper::getInstance();
+        if ($request->has('cancel_now') && $request->cancel_now)
+            $instance->subscription('default')->cancelNow(); // this is just for the "I no do again" people.
+        else
+            $instance->subscription('default')->cancel(); // this is resume able
+
+        return $request->response_helper->respond([
+            'status' => 'success',
+            'message' => 'You have successfully un-subscribed from the plan.'
+        ]);
+    }
+
+    public function updateSubscription(Request $request)
+    {
+        // check if there are vacant seats to be removed
+        $instanceUsers = InstanceHelper::getInstance()->adminUsers();
+
+        if ($request->seats < $instanceUsers->count()) {
+            $usersToFree = $instanceUsers->count() - $request->seats;
+            $verb = ($usersToFree > 1) ? ' are ' : ' is ';
+            return $request->response_helper->respond([
+                'status' => 'warning',
+                'message' => 'There' . $verb . $usersToFree . ' occupying seats to be removed. Please remove the users before you are able to free seats. Make sure that you pass the user\'s resources to another user before you delete them.'
+            ]);
+        }
+
+        InstanceHelper::getInstance()->subscription('default')->updateQuantity($request->seats);
+
+        return $request->response_helper->respond([
+            'status' => 'success',
+            'message' => 'You have successfully altered your seat count.'
+        ]);
     }
 }

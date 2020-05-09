@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<con-page-header provided-title="Scalable pricing without fuss..."/>
-		<div class="mt-5">
+		<div>
 			<div class="margin-text">
 				Our pay-per-seat model is based on two levels of users: Core Users and Collaborators.
 				No implementation fees, unlimited contract storage and all features are available right out of the box
