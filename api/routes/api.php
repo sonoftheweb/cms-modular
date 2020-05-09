@@ -17,9 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'auth'], function () {
     Route::post('registration', 'Auth\AuthenticationController@registerInstance');
     Route::post('login', 'Auth\AuthenticationController@login');
-    Route::get('test', function () {
-        dd(explode(',', env('SANCTUM_STATEFUL_DOMAINS')));
-    });
 });
 
 Route::group(['prefix' => 'payment', 'middleware' => ['auth:api', 'response_in_request']], function () {
@@ -34,6 +31,9 @@ Route::group(['prefix' => 'payment', 'middleware' => ['auth:api', 'response_in_r
 Route::group(['middleware' => ['auth:api', 'protected_api']], function () {
     Route::post('auth/logout', 'Auth\AuthenticationController@logout');
     Route::get('me', 'UserController@me');
+    Route::get('subscription', 'PaymentController@getSubscriptionData');
+    Route::post('subscription/cancel', 'PaymentController@cancelSubscription');
+    Route::post('subscription/update', 'PaymentController@updateSubscription');
 });
 
 Route::fallback(function(){

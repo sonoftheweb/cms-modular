@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="mb-5">
 		<con-title :provided-title="providedTitle"/>
 		<con-breadcrumbs :over-ride="bcOverride"/>
 	</div>
