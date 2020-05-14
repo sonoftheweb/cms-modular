@@ -37,7 +37,7 @@
 					</v-btn>
 				</template>
 				<v-list>
-					<v-list-item @click.stop="gotoPage('/account/me')">
+					<v-list-item @click.stop="gotoPage('/me')">
 						<v-list-item-title>Profile</v-list-item-title>
 					</v-list-item>
 					<v-list-item @click.stop="gotoPage('/manage-subscription')">

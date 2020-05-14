@@ -30,10 +30,15 @@ Route::group(['prefix' => 'payment', 'middleware' => ['auth:api', 'response_in_r
 
 Route::group(['middleware' => ['auth:api', 'protected_api']], function () {
     Route::post('auth/logout', 'Auth\AuthenticationController@logout');
-    Route::get('me', 'UserController@me');
+
     Route::get('subscription', 'PaymentController@getSubscriptionData');
     Route::post('subscription/cancel', 'PaymentController@cancelSubscription');
     Route::post('subscription/update', 'PaymentController@updateSubscription');
+
+    Route::get('me', 'UserController@me');
+    Route::resource('users', 'UserController')->only([
+        'index', 'store', 'show', 'update', 'destroy'
+    ]);
 });
 
 Route::fallback(function(){

@@ -3,6 +3,7 @@ import Home from '../components/pages/Home'
 import Subscription from '../components/pages/Subscription'
 import Me from '../components/pages/account/Me'
 import ManageSubscription from '../components/pages/account/ManageSubscription'
+import Users from '../components/pages/account/Users'
 
 export default [
   {
@@ -46,7 +47,7 @@ export default [
   {
     path: '/users',
     name: 'users',
-    component: Login,
+    component: Users,
     meta: {icon: 'mdi-account-check-outline', displayableName: 'Users', inMenu: true}
   },
   {
@@ -56,17 +57,15 @@ export default [
     meta: {displayableName: 'Manage Subscription'}
   },
   {
+    path: '/me',
+    name: 'me',
+    component: Me,
+    meta: {displayableName: 'My Profile'},
+  },
+  {
     path: '/account',
     name: 'account',
     component: Me,
-    meta: {displayableName: 'Account'},
-    children: [
-      {
-        name: 'account.me',
-        path: 'me',
-        component: Me,
-        meta: {displayableName: 'My Profile'},
-      }
-    ]
+    meta: {displayableName: 'Account'}
   },
 ]

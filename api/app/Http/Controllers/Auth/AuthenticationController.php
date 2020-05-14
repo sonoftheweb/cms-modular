@@ -2,58 +2,65 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Helpers\SanitizeRequestHelper;
-use App\Http\Controllers\Controller;
-use App\Models\Instance;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response;
+use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Instance;
+use App\Http\Controllers\Controller;
+use App\Helpers\SanitizeRequestHelper;
+
 
 class AuthenticationController extends Controller
 {
     /**
      * Registers a user and creates an account
      *
-     * @param Request $request
+     * @param Request $request request data
+     *
      * @return Response
      */
     public function registerInstance(Request $request)
     {
         $request = SanitizeRequestHelper::sanitizeInput($request); // @todo move this into a middleware
 
-        $validator = Validator::make($request->all(), [
+        $validateData = [
             'instance_name' => 'required|max:20',
             'name' => 'required|max:20',
             'email' => 'required|unique:users,email|email:rfc,dns',
             'password' => 'required|min:6|max:20',
             'password_confirmation' => 'required'
-        ]);
+        ];
+        $validator = Validator::make($request->all(), $validateData);
 
-        if ($validator->fails())
-            return response([
+        if ($validator->fails()) {
+            $resp = [
                 'message' => 'Validation failed.',
                 'errors' => $validator->errors()
-            ], 401);
+            ];
+            return response($resp, 401);
+        }
 
         // Create the instance
-        $instance = Instance::create([
+        $instanceCreate = [
             'instance_name' => $request->instance_name,
-            'direct_email' => $request->email,
-        ]);
+            'direct_email' => $request->email
+        ];
+        $instance = Instance::create($instanceCreate);
 
         // Create the user
-        $user = $instance->users()->create([
+        $userCreate = [
             'role_id' => Config::get('constants.roles.account_manager'),
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-        ]);
+        ];
+        $user = $instance->users()->create($userCreate);
 
         $user->attribute()->create([]);
 
@@ -75,7 +82,7 @@ class AuthenticationController extends Controller
 
     public function login(Request $request)
     {
-        if (Auth::attempt($request->except('remember_me'), $request->remember_me)) {
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'active' => true], $request->remember_me)) {
             $user = Auth::user();
              return response([
                  'token' => $user->createToken('auth-token')->accessToken

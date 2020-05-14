@@ -1,5 +1,6 @@
 import './bootstrap'
 import Vue from 'vue'
+import vueDebounce from 'vue-debounce'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import store from './store/index'
@@ -11,6 +12,8 @@ import './styles/styles.scss'
 Vue.config.productionTip = false
 stripe.initialize()
 router.initialize()
+
+Vue.use(vueDebounce)
 
 new Vue({
   vuetify,
