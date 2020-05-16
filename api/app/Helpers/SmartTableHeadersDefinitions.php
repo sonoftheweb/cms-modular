@@ -35,4 +35,15 @@ class SmartTableHeadersDefinitions
             ],
         ];
     }
+    public static function roles()
+    {
+        return [
+            [
+                'text' => 'Role name',
+                'align' => 'start',
+                'sortable' => true,
+                'value' => 'role_name'
+            ]
+        ];
+    }
 }

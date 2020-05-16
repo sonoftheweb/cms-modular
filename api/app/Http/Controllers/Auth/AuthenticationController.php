@@ -99,7 +99,7 @@ class AuthenticationController extends Controller
         if (!Auth::check())
             return response(['message' => 'Access denied for this operation.'], 404);
 
-        DB::table('oauth_access_token')->where('user_id', Auth::id())->delete();
+        DB::table('oauth_access_tokens')->where('user_id', Auth::id())->delete();
         Session::flush();
         return response([
             'message' => 'User logged out.'

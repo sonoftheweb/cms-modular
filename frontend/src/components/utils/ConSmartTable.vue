@@ -10,7 +10,7 @@
     >
       <template v-slot:top>
         <v-toolbar flat>
-          <v-btn color="indigo" depressed dark>Add</v-btn>
+          <v-btn color="indigo" @click="createItem" depressed dark>Add</v-btn>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
           <v-text-field v-model="search" v-debounce="runSearch" label="Search" class="mt-7" outlined dense></v-text-field>
@@ -142,6 +142,9 @@
       },
       performAction(item) {
         this.$emit('smart-table-row-clicked', item)
+      },
+      createItem() {
+        this.$emit('smart-table-add')
       },
       editItem(item) {
         this.$emit('smart-table-edit', item)

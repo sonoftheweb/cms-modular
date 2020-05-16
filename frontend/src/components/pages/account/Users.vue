@@ -11,23 +11,29 @@
       :key="tableKey"
       :uri="uri"
       :smart-actions="['edit', 'delete']"
+      @smart-table-add="addUser"
       @smart-table-row-edit="editUser($event)"
       @smart-table-row-clicked="editUser($event)"
-      @smart-table-row-delete="editUser($event)"
+      @smart-table-row-delete="deleteUser($event)"
     />
   
     <v-dialog v-if="editUserForm.user" persistent v-model="editUserForm.show" max-width="490">
       <v-card>
-        <v-card-title class="headline">Edit User: {{ editUserForm.user.name }}</v-card-title>
+        <v-card-title class="headline" v-if="Object.prototype.hasOwnProperty.call(editUserForm.user, 'active')">
+          Edit User: {{ editUserForm.user.name }}
+        </v-card-title>
+        <v-card-title v-else class="headline">
+          Add User
+        </v-card-title>
         <v-card-text>
           Alter the details below. Updating password is not allowed.
           <v-form ref="updateUserForm">
             <v-row class="mt-3">
               <v-col md="12" sm="12">
-                <v-text-field dense label="Email *" v-model="editUserForm.user.email" outlined disabled></v-text-field>
+                <v-text-field dense label="Email *" v-model="editUserForm.user.email" outlined :disabled="isDisabled()"></v-text-field>
               </v-col>
             </v-row>
-            <v-divider class="mb-7"/>
+            <v-divider v-if="isDisabled()" class="mb-7"/>
             <v-row>
               <v-col md="6" sm="12">
                 <v-text-field dense label="Name *" v-model="editUserForm.user.name" outlined></v-text-field>
@@ -48,8 +54,21 @@
                 ></v-textarea>
               </v-col>
             </v-row>
-            <small>Is this user active?</small>
-            <v-switch inset v-model="editUserForm.user.active" class="mx-2" label="Active"></v-switch>
+            <div v-if="Object.prototype.hasOwnProperty.call(editUserForm.user, 'active')">
+              <small>Is this user active?</small>
+              <v-switch inset v-model="editUserForm.user.active" class="mx-2" label="Active"></v-switch>
+            </div>
+            <div v-else>
+              <v-select
+                v-model="editUserForm.user.role"
+                :items="roles"
+                item-text="role_name"
+                item-value="id"
+                label="Assigned role*"
+                dense
+                outlined
+              ></v-select>
+            </div>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -71,21 +90,47 @@ export default {
   name: "Users",
   components: { ConPageHeader, ConSmartTable },
   computed: {
-    ...mapGetters(['priceFormatted', 'firstLetterCaps', 'user'])
+    ...mapGetters(['user','priceFormatted', 'firstLetterCaps', 'user'])
   },
   data() {
     return {
       uri: '/api/users',
       editUserForm: {
         show: false,
-        user: null
+        user: {
+          attribute: {
+            user_job_title: null,
+            user_job_description: null,
+          },
+          email: null,
+          name: null,
+          role: null
+        }
       },
+      roles: [],
       tableKey: 1
     }
   },
   methods: {
+    addUser() {
+      // get roles available
+      this.$http.get('/api/roles').then(response => {
+        this.roles = response.data.data
+        this.editUserForm.user = {
+          attribute: {
+            user_job_title: null,
+            user_job_description: null,
+          },
+          email: null,
+          name: null,
+          role: null
+        }
+        this.editUserForm.show = true
+      })
+    },
     editUser(user) {
-      console.log(user)
+      if (this.user.id === user.id)
+        return
       this.editUserForm.show = true
       this.editUserForm.user = user
     },
@@ -106,6 +151,16 @@ export default {
           this.tableKey += 1
         });
       }
+    },
+    deleteUser(user) {
+      if (this.user.id === user.id)
+        return
+      this.$http.delete(this.uri + '/' + user.id).then(response => {
+        this.$eventBus.$emit('alert', response.data)
+      })
+    },
+    isDisabled() {
+      return this.editUserForm.user.email !== null
     }
   },
   mounted() {

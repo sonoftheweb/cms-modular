@@ -4,35 +4,9 @@ namespace App\Http\Resources;
 
 use App\Helpers\SmartTableHeadersDefinitions;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class UserCollection extends ResourceCollection
+class UserCollection extends BaseCollection
 {
-    /**
-     * @var $meta
-     */
-    private $meta;
-
-    /**
-     * UserCollection constructor.
-     *
-     * @param $resource
-     */
-    public function __construct($resource)
-    {
-        $this->meta = [
-            'total' => $resource->total(),
-            'count' => $resource->count(),
-            'per_page' => $resource->perPage(),
-            'current_page' => $resource->currentPage(),
-            'total_pages' => $resource->lastPage()
-        ];
-
-        $resource = $resource->getCollection();
-
-        parent::__construct($resource);
-    }
-
     /**
      * Transform the resource collection into an array.
      *

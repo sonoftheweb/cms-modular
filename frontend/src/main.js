@@ -10,15 +10,18 @@ import stripe from './stripe/stripe'
 import './styles/styles.scss'
 
 Vue.config.productionTip = false
-stripe.initialize()
-router.initialize()
 
 Vue.use(vueDebounce)
 
-new Vue({
-  vuetify,
-  router,
-  store,
-  stripe,
-  render: h => h(App)
-}).$mount('#app')
+store.dispatch('bootstrapApp').then(() => {
+  stripe.initialize()
+  router.initialize()
+  
+  new Vue({
+    vuetify,
+    router,
+    store,
+    stripe,
+    render: h => h(App)
+  }).$mount('#app')
+})

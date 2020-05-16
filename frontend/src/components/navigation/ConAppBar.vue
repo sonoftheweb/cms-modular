@@ -27,7 +27,7 @@
 
 			<v-spacer/>
 
-			<v-menu offset-y>
+			<v-menu offset-y v-if="authenticated">
 				<template v-slot:activator="{ on }">
 					<v-btn text class="mr-5" v-on="on">
 						<div class="body-2">{{ user.name }}</div>
@@ -64,7 +64,7 @@
 			ConConfirm
 		},
 		computed: {
-			...mapGetters(['user'])
+			...mapGetters(['user', 'authenticated'])
 		},
 		data() {
 			return {
@@ -76,9 +76,7 @@
 				this.$eventBus.$emit('toggle-menu')
 			},
 			logout() {
-				this.$store.dispatch('logout').then(() => {
-					this.gotoPage('/')
-				})
+				this.$store.dispatch('logout')
 			},
 			gotoPage(page) {
 				this.$router.push(page)

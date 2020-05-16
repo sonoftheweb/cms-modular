@@ -22,6 +22,8 @@ router.initialize = async () => {
 		if (to.name === 'login' && store.getters.authenticated) {
 			return router.push('/home')
 		}
+		
+		//console.log(store.getters.needsUserData)
 
 		if (store.getters.authenticated && store.getters.needsUserData && to.name !== 'subscription') {
 			await store.dispatch('fetchUserData')
@@ -30,6 +32,10 @@ router.initialize = async () => {
 
 		if (store.getters.authenticated && !store.getters.subscribed && to.name !== 'subscription') {
 			return;
+		}
+		
+		if (Object.prototype.hasOwnProperty.call(to.meta, 'requiresAuth') && to.meta.requiresAuth && !store.getters.authenticated) {
+			return router.push('/')
 		}
 
 		/*if (store.getters.loggedIn) {

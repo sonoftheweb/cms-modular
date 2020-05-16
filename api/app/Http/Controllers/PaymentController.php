@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Api\ApiController;
 use http\Client\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Plan;
 use App\Http\Resources\PlanCollection;
 use App\Helpers\InstanceHelper;
 
-class PaymentController extends Controller
+class PaymentController extends ApiController
 {
     /**
      * Get's all plans in DB
@@ -118,7 +118,7 @@ class PaymentController extends Controller
      * Pulls in the current instance's subscription
      *
      * @param Request $request with all params and response
-     * 
+     *
      * @return mixed
      */
     public function getSubscriptionData(Request $request)
@@ -135,7 +135,7 @@ class PaymentController extends Controller
      * Cancle subs for this account
      *
      * @param Request $request with all params and response
-     * 
+     *
      * @return Response
      */
     public function cancelSubscription(Request $request)
@@ -143,10 +143,10 @@ class PaymentController extends Controller
         $instance = InstanceHelper::getInstance();
         if ($request->has('cancel_now') && $request->cancel_now) {
             // this is just for the "I no do again" people.
-            $instance->subscription('default')->cancelNow(); 
+            $instance->subscription('default')->cancelNow();
         } else {
             $instance->subscription('default')->cancel(); // this is resume able
-        }  
+        }
 
         $resp = [
             'status' => 'success',
@@ -154,13 +154,13 @@ class PaymentController extends Controller
         ];
         return $request->response_helper->respond($resp);
     }
-    
-    
+
+
     /**
      * Update the subscription for this account
      *
      * @param Request $request with all params and response
-     * 
+     *
      * @return Response
      */
     public function updateSubscription(Request $request)
@@ -174,7 +174,7 @@ class PaymentController extends Controller
             $verb = ($usersToFree > 1) ? ' are ' : ' is ';
             $resp = [
                 'status' => 'warning',
-                'message' => 'There' . 
+                'message' => 'There' .
                 $verb . $usersToFree . ' occupying seats to be removed. Please remove the users before you are able to free seats. Make sure that you pass the user\'s resources to another user before you delete them.'
             ];
             return $request->response_helper->respond($resp);
@@ -182,14 +182,14 @@ class PaymentController extends Controller
 
         $instance->subscription('default')
             ->updateQuantity($request->seats);
-            
+
         $instance->update(['seats' => $request->seats]);
 
         $resp = [
             'status' => 'success',
             'message' => 'You have successfully altered your seat count.'
         ];
-        
+
         return $request->response_helper->respond($resp);
     }
 }

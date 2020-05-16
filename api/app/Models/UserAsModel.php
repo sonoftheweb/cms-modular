@@ -2,16 +2,13 @@
 
 namespace App\Models;
 
-use App\Models\Traits\InstanceTrait;
 use App\Models\Traits\UserModelTraits;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
 
-class User extends Authenticatable
+class UserAsModel extends ScopableModel
 {
-    use HasApiTokens, Notifiable, InstanceTrait, UserModelTraits;
+    use UserModelTraits;
+
+    protected $table = 'users';
 
     protected $dateFormat = 'Y-m-d H:i:sO';
 

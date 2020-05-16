@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::group(['middleware' => ['response_in_request']], function () {
+    Route::get('app', 'AppController@app');
+});
+
 Route::group(['prefix' => 'auth'], function () {
     Route::post('registration', 'Auth\AuthenticationController@registerInstance');
     Route::post('login', 'Auth\AuthenticationController@login');
@@ -35,10 +39,11 @@ Route::group(['middleware' => ['auth:api', 'protected_api']], function () {
     Route::post('subscription/cancel', 'PaymentController@cancelSubscription');
     Route::post('subscription/update', 'PaymentController@updateSubscription');
 
-    Route::get('me', 'UserController@me');
     Route::resource('users', 'UserController')->only([
         'index', 'store', 'show', 'update', 'destroy'
     ]);
+    Route::get('me', 'UserController@me');
+    Route::get('roles', 'UserController@roles');
 });
 
 Route::fallback(function(){
