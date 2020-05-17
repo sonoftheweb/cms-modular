@@ -3,6 +3,7 @@ import Home from '../components/pages/Home'
 import Subscription from '../components/pages/Subscription'
 import Me from '../components/pages/account/Me'
 import ManageSubscription from '../components/pages/account/ManageSubscription'
+import Users from '../components/pages/account/Users'
 
 export default [
   {
@@ -21,7 +22,7 @@ export default [
     path: '/home',
     name: 'home',
     component: Home,
-    meta: {icon: 'mdi-view-dashboard-outline', displayableName: 'Dashboard', inMenu: true},
+    meta: {requiresAuth: true, icon: 'mdi-view-dashboard-outline', displayableName: 'Dashboard', inMenu: true},
     children: [
       {
         name: 'home.task-dash',
@@ -35,38 +36,36 @@ export default [
     path: '/contracts',
     name: 'contracts',
     component: Login,
-    meta: {icon: 'mdi-file-document-edit-outline', displayableName: 'Contracts', inMenu: true}
+    meta: {requiresAuth: true, icon: 'mdi-file-document-edit-outline', displayableName: 'Contracts', inMenu: true}
   },
   {
     path: '/tasks',
     name: 'tasks',
     component: Login,
-    meta: {icon: 'mdi-calendar-clock', displayableName: 'Tasks', inMenu: true}
+    meta: {requiresAuth: true, icon: 'mdi-calendar-clock', displayableName: 'Tasks', inMenu: true}
   },
   {
     path: '/users',
     name: 'users',
-    component: Login,
-    meta: {icon: 'mdi-account-check-outline', displayableName: 'Users', inMenu: true}
+    component: Users,
+    meta: {requiresAuth: true, icon: 'mdi-account-check-outline', displayableName: 'Users', inMenu: true}
   },
   {
     path: '/manage-subscription',
     name: 'manage-subscription',
     component: ManageSubscription,
-    meta: {displayableName: 'Manage Subscription'}
+    meta: {requiresAuth: true, displayableName: 'Manage Subscription'}
+  },
+  {
+    path: '/me',
+    name: 'me',
+    component: Me,
+    meta: {requiresAuth: true, displayableName: 'My Profile'},
   },
   {
     path: '/account',
     name: 'account',
     component: Me,
-    meta: {displayableName: 'Account'},
-    children: [
-      {
-        name: 'account.me',
-        path: 'me',
-        component: Me,
-        meta: {displayableName: 'My Profile'},
-      }
-    ]
+    meta: {requiresAuth: true, displayableName: 'Account'}
   },
 ]

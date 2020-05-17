@@ -1,11 +1,11 @@
 <template>
-  <v-row>
-    <v-col md="4" offset-md="4">
+  <v-row v-if="!authenticated">
+    <v-col md="5" offset-md="3">
       <h2 class="thin font-weight-light mb-3">Welcome back :)</h2>
       <v-card color="grey lighten-5" light>
-        <v-card-text class="px-6">
+        <v-card-text class="px-5">
           <v-row>
-            <v-col md="8">
+            <v-col lg="8" md="12">
               <v-form ref="form" lazy-validation class="mr-1">
                 <v-text-field
                   v-model="auth.email"
@@ -28,11 +28,11 @@
                   filled
                 ></v-text-field>
                 <v-checkbox class="mt-0" v-model="auth.remember_me" label="Remember me"></v-checkbox>
-                <v-btn depressed large dark color="indigo" class="mr-3" @click="login">Let's go!</v-btn>
+                <v-btn depressed large dark color="indigo" class="mr-3 float-md-left" @click="login">Let's go!</v-btn>
                 <v-btn depressed large light class="float-right">Forgot Password</v-btn>
               </v-form>
             </v-col>
-            <v-col md="4" class="hidden-sm-and-down">
+            <v-col lg="4" class="hidden-md-and-down">
               <p class="pb-3 mb-10">Fill in the form to access your account.</p>
               <h3 class="mb-4">Your first time here?</h3>
               <p>Setup an account and access all features for free for a month.</p>
@@ -50,7 +50,7 @@
 
   export default {
     computed: {
-      ...mapGetters(['emailValidationRules','requiredFieldRule'])
+      ...mapGetters(['emailValidationRules','requiredFieldRule', 'authenticated'])
     },
     data() {
       return {
@@ -68,8 +68,7 @@
         if (this.$refs.form.validate()) {
           this.$http.post('/api/auth/login', this.auth).then(response => {
             this.$store.dispatch('loggedIn', response.data.token).then(async () => {
-              await this.$store.dispatch("fetchUserData")
-              await this.$router.push('/home');
+              window.location.replace('/home')
             })
           }).catch(err => {
             console.log('do something here', err);

@@ -5,7 +5,7 @@
       <con-app-bar v-if="authenticated"/>
       <con-menu v-if="authenticated"/>
       <v-content>
-        <v-container fluid class="pa-10" :class="{'fill-height': !authenticated}">
+        <v-container class="pa-10" :class="{'fill-height container': !authenticated}">
           <router-view></router-view>
         </v-container>
       </v-content>

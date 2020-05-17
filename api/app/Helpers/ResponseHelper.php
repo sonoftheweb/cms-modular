@@ -47,7 +47,7 @@ class ResponseHelper
         report($throwable);
 
         $response = [
-            'displayAlert' => 'error',
+            'status' => 'error',
             'message' => 'There was an error in the operation.',
             'error' => [
                 'status_code' => $this->getStatusCode()
@@ -78,11 +78,11 @@ class ResponseHelper
         switch (gettype($response)) {
             case "array":
                 return $this->setStatusCode($statusCode)->respond(array_merge([
-                    'displayAlert' => 'success'
+                    'status' => 'success'
                 ], $response));
             default:
                 return $this->setStatusCode($statusCode)->respond([
-                    'displayAlert' => 'success',
+                    'status' => 'success',
                     'message' => $response,
                 ]);
         }

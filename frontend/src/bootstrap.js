@@ -57,7 +57,10 @@ axios.interceptors.response.use(response => {
     // if error.response is 404 and the message states that no account is set
     if (error.response.status === 404 && Object.prototype.hasOwnProperty.call(data, 'no-account')) {
         // show an error and ask them to contact admin.
-        console.log('show "please contact admin"')
+        $eventBus.$emit({
+            status: 'error',
+            message: 'You have no account. Please contact the admin.'
+        })
     }
 
     // you do not have access to the application hence we clean all cookies and log you out
@@ -67,6 +70,18 @@ axios.interceptors.response.use(response => {
         })
         return
     }*/
+    
+    if (error.response.status === 401 && Object.prototype.hasOwnProperty.call(data, 'message') && data.message === 'Unauthenticated') {
+        store.dispatch('loggedOut').then(() => {
+            window.location.replace("/")
+        })
+        return
+    }
+    
+    $eventBus.$emit({
+        status: 'error',
+        message: 'Something went wrong.'
+    })
 
     return Promise.reject(error)
 })

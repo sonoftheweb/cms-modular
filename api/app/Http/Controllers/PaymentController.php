@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\InstanceHelper;
-use App\Http\Resources\PlanCollection;
-use App\Models\Plan;
+use App\Http\Controllers\Api\ApiController;
 use http\Client\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Plan;
+use App\Http\Resources\PlanCollection;
+use App\Helpers\InstanceHelper;
 
-class PaymentController extends Controller
+class PaymentController extends ApiController
 {
     /**
      * Get's all plans in DB
@@ -117,7 +117,8 @@ class PaymentController extends Controller
     /**
      * Pulls in the current instance's subscription
      *
-     * @param Request $request
+     * @param Request $request with all params and response
+     *
      * @return mixed
      */
     public function getSubscriptionData(Request $request)
@@ -130,39 +131,65 @@ class PaymentController extends Controller
         ]);
     }
 
+    /**
+     * Cancle subs for this account
+     *
+     * @param Request $request with all params and response
+     *
+     * @return Response
+     */
     public function cancelSubscription(Request $request)
     {
         $instance = InstanceHelper::getInstance();
-        if ($request->has('cancel_now') && $request->cancel_now)
-            $instance->subscription('default')->cancelNow(); // this is just for the "I no do again" people.
-        else
+        if ($request->has('cancel_now') && $request->cancel_now) {
+            // this is just for the "I no do again" people.
+            $instance->subscription('default')->cancelNow();
+        } else {
             $instance->subscription('default')->cancel(); // this is resume able
+        }
 
-        return $request->response_helper->respond([
+        $resp = [
             'status' => 'success',
             'message' => 'You have successfully un-subscribed from the plan.'
-        ]);
+        ];
+        return $request->response_helper->respond($resp);
     }
 
+
+    /**
+     * Update the subscription for this account
+     *
+     * @param Request $request with all params and response
+     *
+     * @return Response
+     */
     public function updateSubscription(Request $request)
     {
         // check if there are vacant seats to be removed
-        $instanceUsers = InstanceHelper::getInstance()->adminUsers();
+        $instance = InstanceHelper::getInstance();
+        $instanceUsers = $instance->adminUsers();
 
         if ($request->seats < $instanceUsers->count()) {
             $usersToFree = $instanceUsers->count() - $request->seats;
             $verb = ($usersToFree > 1) ? ' are ' : ' is ';
-            return $request->response_helper->respond([
+            $resp = [
                 'status' => 'warning',
-                'message' => 'There' . $verb . $usersToFree . ' occupying seats to be removed. Please remove the users before you are able to free seats. Make sure that you pass the user\'s resources to another user before you delete them.'
-            ]);
+                'message' => 'There' .
+                $verb . $usersToFree . ' occupying seats to be removed. Please remove the users before you are able to free seats. Make sure that you pass the user\'s resources to another user before you delete them.'
+            ];
+            return $request->response_helper->respond($resp);
         }
 
-        InstanceHelper::getInstance()->subscription('default')->updateQuantity($request->seats);
+        $instance->subscription('default')
+            ->updateQuantity($request->seats);
 
-        return $request->response_helper->respond([
+        $instance->update(['seats' => $request->seats]);
+
+        $resp = [
             'status' => 'success',
             'message' => 'You have successfully altered your seat count.'
-        ]);
+        ];
+
+        return $request->response_helper->respond($resp);
     }
 }
