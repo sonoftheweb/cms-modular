@@ -26,6 +26,10 @@
           Add User
         </v-card-title>
         <v-card-text>
+          <v-alert v-if="formMessage" class="my-5" icon="mdi-alert-box-outline" type="warning">
+            <div class="mb-3">{{ formMessage }}</div>
+            <v-btn @click="$router.push('/manage-subscription')" small depressed class="warning darken-1">Yes</v-btn>
+          </v-alert>
           Alter the details below. Updating password is not allowed.
           <v-form ref="updateUserForm">
             <v-row class="mt-3">
@@ -107,6 +111,7 @@ export default {
           role: null
         }
       },
+      formMessage: null,
       roles: [],
       tableKey: 1
     }
@@ -157,20 +162,24 @@ export default {
       else {
         // create a user
         this.$http.post(this.uri, this.editUserForm.user).then(response => {
-          this.editUserForm = {
-            show: false,
+          if (Object.prototype.hasOwnProperty.call(response.data, 'status') && response.data.status === 'action_required') {
+            this.formMessage = response.data.message;
+          } else {
+            this.editUserForm = {
+              show: false,
               user: {
-              attribute: {
-                user_job_title: null,
+                attribute: {
+                  user_job_title: null,
                   user_job_description: null,
-              },
-              email: null,
+                },
+                email: null,
                 name: null,
                 role: null
+              }
             }
+            this.$eventBus.$emit('alert', response.data)
+            this.tableKey += 1
           }
-          this.$eventBus.$emit('alert', response.data)
-          this.tableKey += 1
         });
       }
     },

@@ -9,6 +9,7 @@ use App\Http\Resources\RoleCollection;
 use App\Http\Resources\UserCollection;
 use App\Models\Role;
 use App\Models\UserAsModel;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -80,6 +81,17 @@ class UserController extends ApiController
 
     public function store(Request $request)
     {
+        if ($request->role === Config::get('constants.roles.account_manager')) {
+            // let's check the number of seats available
+            $managersCount = UserAsModel::where('role_id', Config::get('constants.roles.account_manager'))->count();
+            if ($managersCount >= InstanceHelper::seatsAvailable()) {
+                return $request->response_helper->respond([
+                    'status' => 'action_required',
+                    'message' => 'You have reached the maximum number of admin users you may have on this account. To add more users, you would need to get more seats. Do you want to update your account seats?'
+                ]);
+            }
+        }
+
         $user = new UserAsModel;
         $user->name = $request->name;
         $user->email = $request->email;
@@ -88,7 +100,7 @@ class UserController extends ApiController
 
         $user->attribute()->create($request->attribute);
 
-        return $request->response_helper->respondWithSuccessMessage(200, 'Successfully updated user.');
+        return $request->response_helper->respondWithSuccessMessage(200, 'Successfully added user.');
     }
 
     public function destroy(Request $request, $id)

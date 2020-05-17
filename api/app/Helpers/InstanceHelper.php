@@ -25,4 +25,13 @@ class InstanceHelper
         $user = Auth::user();
         return static::$instance = $user->instance()->first();
     }
+
+    public static function seatsAvailable()
+    {
+        $instance = self::getInstance();
+        if (!$instance) {
+            abort(404);
+        }
+        return $instance->seats;
+    }
 }
