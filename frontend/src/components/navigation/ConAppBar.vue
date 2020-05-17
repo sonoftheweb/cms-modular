@@ -27,7 +27,7 @@
 
 			<v-spacer/>
 
-			<v-menu offset-y v-if="authenticated">
+			<v-menu close-delay="30" open-on-hover offset-y v-if="authenticated">
 				<template v-slot:activator="{ on }">
 					<v-btn text class="mr-5" v-on="on">
 						<div class="body-2">{{ user.name }}</div>
