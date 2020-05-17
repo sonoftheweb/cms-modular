@@ -18,7 +18,8 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'active' => $this->active
+            'active' => $this->active,
+            'status' => ($this->active) ? 'Active' : 'Not Active'
         ];
 
         if (isset($this->attribute))

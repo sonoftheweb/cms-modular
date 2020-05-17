@@ -93,7 +93,7 @@ class UserController extends ApiController
 
     public function destroy(Request $request, $id)
     {
-        User::where('id', $id)->destroy();
+        User::where('id', $id)->delete();
         return $request->response_helper->respondWithSuccessMessage(200, 'Successfully deleted user.');
     }
 }

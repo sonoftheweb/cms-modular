@@ -22,6 +22,12 @@ class SmartTableHeadersDefinitions
                 'value' => 'email'
             ],
             [
+                'text' => 'Status',
+                'align' => 'start',
+                'sortable' => true,
+                'value' => 'status'
+            ],
+            [
                 'text' => 'Role',
                 'align' => 'start',
                 'sortable' => true,

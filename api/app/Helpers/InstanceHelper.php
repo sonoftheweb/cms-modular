@@ -23,14 +23,6 @@ class InstanceHelper
     public static function getInstance()
     {
         $user = Auth::user();
-        /*$instance = Cache::remember(
-            'user_'. $user->id . '_' . $user->instance_id,
-            env('CACHE_TIME_ONE_DAY'),
-            function () use ($user) {
-                return $user->instance()->first();
-            }
-        );*/
-
         return static::$instance = $user->instance()->first();
     }
 }

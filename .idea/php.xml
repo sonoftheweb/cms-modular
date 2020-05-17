@@ -119,6 +119,16 @@
       <path value="$PROJECT_DIR$/api/vendor/firebase/php-jwt" />
       <path value="$PROJECT_DIR$/api/vendor/laminas/laminas-diactoros" />
       <path value="$PROJECT_DIR$/api/vendor/laminas/laminas-zendframework-bridge" />
+      <path value="$PROJECT_DIR$/api/vendor/laravel/scout" />
+      <path value="$PROJECT_DIR$/api/vendor/algolia/algoliasearch-client-php" />
+      <path value="$PROJECT_DIR$/api/vendor/elasticsearch/elasticsearch" />
+      <path value="$PROJECT_DIR$/api/vendor/babenkoivan/elastic-adapter" />
+      <path value="$PROJECT_DIR$/api/vendor/babenkoivan/elastic-client" />
+      <path value="$PROJECT_DIR$/api/vendor/babenkoivan/elastic-migrations" />
+      <path value="$PROJECT_DIR$/api/vendor/ezimuel/guzzlestreams" />
+      <path value="$PROJECT_DIR$/api/vendor/ezimuel/ringphp" />
+      <path value="$PROJECT_DIR$/api/vendor/react/promise" />
+      <path value="$PROJECT_DIR$/api/vendor/babenkoivan/elastic-scout-driver" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.2" />

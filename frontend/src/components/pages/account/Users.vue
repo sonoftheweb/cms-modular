@@ -12,9 +12,9 @@
       :uri="uri"
       :smart-actions="['edit', 'delete']"
       @smart-table-add="addUser"
-      @smart-table-row-edit="editUser($event)"
+      @smart-table-edit="editUser($event)"
+      @smart-table-delete="deleteUser($event)"
       @smart-table-row-clicked="editUser($event)"
-      @smart-table-row-delete="deleteUser($event)"
     />
   
     <v-dialog v-if="editUserForm.user" persistent v-model="editUserForm.show" max-width="490">
@@ -138,7 +138,18 @@ export default {
       if ((Object.prototype.hasOwnProperty.call(this.editUserForm.user, 'id'))) {
         // update a user
         this.$http.put(this.uri + '/' + this.editUserForm.user.id, this.editUserForm.user).then(response => {
-          this.editUserForm.show = false
+          this.editUserForm = {
+            show: false,
+            user: {
+              attribute: {
+                user_job_title: null,
+                user_job_description: null,
+              },
+              email: null,
+              name: null,
+              role: null
+            }
+          }
           this.$eventBus.$emit('alert', response.data)
           this.tableKey += 1
         });
@@ -146,7 +157,18 @@ export default {
       else {
         // create a user
         this.$http.post(this.uri, this.editUserForm.user).then(response => {
-          this.editUserForm.show = false
+          this.editUserForm = {
+            show: false,
+              user: {
+              attribute: {
+                user_job_title: null,
+                  user_job_description: null,
+              },
+              email: null,
+                name: null,
+                role: null
+            }
+          }
           this.$eventBus.$emit('alert', response.data)
           this.tableKey += 1
         });
@@ -157,10 +179,11 @@ export default {
         return
       this.$http.delete(this.uri + '/' + user.id).then(response => {
         this.$eventBus.$emit('alert', response.data)
+        this.tableKey += 1
       })
     },
     isDisabled() {
-      return this.editUserForm.user.email !== null
+      return Object.prototype.hasOwnProperty.call(this.editUserForm.user, 'id')
     }
   },
   mounted() {

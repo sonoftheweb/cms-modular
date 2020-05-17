@@ -17,9 +17,9 @@
         </v-toolbar>
       </template>
       <template slot="item" slot-scope="props">
-        <tr @click="performAction(props.item)">
+        <tr>
           <td v-for="header in headers" :key="header['value']">
-            <div v-if="!header['value'].endsWith('_icon')" class="pointer">{{props.item[header['value']]}}</div>
+            <div v-if="!header['value'].endsWith('_icon')" class="pointer" @click="performAction(props.item)">{{props.item[header['value']]}}</div>
             <div v-if="header['value'].endsWith('_icon')">
               <v-icon>{{props.item[header['value']]}}</v-icon>
             </div>
