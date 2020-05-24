@@ -2,10 +2,10 @@
   <div>
     <con-alerts :alert-data="alertData" class=""/>
     <v-app>
-      <con-app-bar v-if="authenticated"/>
+      <con-app-bar/>
       <con-menu v-if="authenticated"/>
       <v-content>
-        <v-container class="pa-10" :class="{'fill-height container': !authenticated}">
+        <v-container class="pa-10" :class="containerClass()">
           <router-view></router-view>
         </v-container>
       </v-content>
@@ -31,6 +31,18 @@ export default {
   data: () => ({
     alertData: {}
   }),
+  methods: {
+    containerClass() {
+      let className = ''
+      if (!this.authenticated)
+        className = 'fill-height container'
+  
+      if (this.$route.name === 'registration')
+        className = ''
+      
+      return className
+    }
+  },
   mounted() {
     this.$eventBus.$on('alert', alertData => {
       this.alertData = alertData

@@ -24,9 +24,9 @@ class CreatePlansTable extends Migration
             $table->integer('interval_count');
             $table->integer('livemode');
             $table->json('metadata');
-            $table->string('product');
+            $table->string('product_id');
             $table->json('tiers');
-            $table->integer('trial_period_days');
+            $table->integer('trial_period_days')->default(14);
             $table->timestamps();
         });
     }

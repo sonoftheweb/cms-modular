@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['response_in_request']], function () {
     Route::get('app', 'AppController@app');
+    Route::get('products', 'PaymentController@products');
+    Route::resource('products', 'ProductController')->only(['index']);
 });
 
 Route::group(['prefix' => 'auth'], function () {

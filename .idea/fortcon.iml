@@ -6,12 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/api/app" isTestSource="false" packagePrefix="App\" />
       <sourceFolder url="file://$MODULE_DIR$/api/tests" isTestSource="true" packagePrefix="Tests\" />
       <sourceFolder url="file://$MODULE_DIR$/api/Modules" isTestSource="false" packagePrefix="Modules\" />
-      <excludeFolder url="file://$MODULE_DIR$/api/vendor/algolia/algoliasearch-client-php" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/asm89/stack-cors" />
-      <excludeFolder url="file://$MODULE_DIR$/api/vendor/babenkoivan/elastic-adapter" />
-      <excludeFolder url="file://$MODULE_DIR$/api/vendor/babenkoivan/elastic-client" />
-      <excludeFolder url="file://$MODULE_DIR$/api/vendor/babenkoivan/elastic-migrations" />
-      <excludeFolder url="file://$MODULE_DIR$/api/vendor/babenkoivan/elastic-scout-driver" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/brick/math" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/composer" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/defuse/php-encryption" />
@@ -22,9 +17,6 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/dompdf/dompdf" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/dragonmantank/cron-expression" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/egulias/email-validator" />
-      <excludeFolder url="file://$MODULE_DIR$/api/vendor/elasticsearch/elasticsearch" />
-      <excludeFolder url="file://$MODULE_DIR$/api/vendor/ezimuel/guzzlestreams" />
-      <excludeFolder url="file://$MODULE_DIR$/api/vendor/ezimuel/ringphp" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/facade/flare-client-php" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/facade/ignition" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/facade/ignition-contracts" />
@@ -42,7 +34,6 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/laravel/cashier" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/laravel/framework" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/laravel/passport" />
-      <excludeFolder url="file://$MODULE_DIR$/api/vendor/laravel/scout" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/laravel/tinker" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/lcobucci/jwt" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/league/commonmark" />
@@ -87,7 +78,6 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/ralouphie/getallheaders" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/ramsey/collection" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/ramsey/uuid" />
-      <excludeFolder url="file://$MODULE_DIR$/api/vendor/react/promise" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/sabberworm/php-css-parser" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/scrivo/highlight.php" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/sebastian/code-unit-reverse-lookup" />
@@ -133,6 +123,8 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/vlucas/phpdotenv" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/voku/portable-ascii" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend-ng/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend-ng/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/dist" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/public" />
     </content>

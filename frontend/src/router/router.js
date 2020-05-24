@@ -14,12 +14,8 @@ router.initialize = async () => {
 		if (to.name === 'logout' || from.name === 'logout') {
 			next()
 		}
-
-		if (!store.getters.authenticated && to.name !== 'login') {
-			await store.dispatch('loggedOut')
-		}
 		
-		if (to.name === 'login' && store.getters.authenticated) {
+		if ((to.name === 'login' || to.name === 'registration') && store.getters.authenticated) {
 			return router.push('/home')
 		}
 		

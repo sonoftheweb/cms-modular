@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources;
 
-use App\Helpers\SmartTableHeadersDefinitions;
 use Illuminate\Http\Request;
+use App\Helpers\SmartTableHeadersDefinitions;
 
 class UserCollection extends BaseCollection
 {

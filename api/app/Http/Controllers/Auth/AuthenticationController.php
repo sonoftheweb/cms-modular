@@ -82,12 +82,35 @@ class AuthenticationController extends Controller
 
     public function login(Request $request)
     {
+        if ($request->has('confirm_password') && !empty($request->confirm_password)) {
+            // check that passwords match else abort
+            if ($request->password !== $request->confirm_password)
+                return response([
+                    'status' => 'action_required',
+                    'message' => 'The password confirmation did not pass validation. Please re-enter the password again.'
+                ]);
+
+            User::where('email', $request->email)->update([
+                'password' => Hash::make($request->password)
+            ]);
+        }
+
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'active' => true], $request->remember_me)) {
             $user = Auth::user();
              return response([
                  'token' => $user->createToken('auth-token')->accessToken
              ]);
         } else {
+
+            // check if the user exist and has a password
+            $user = User::where('email', $request->email)->first();
+            if (empty($user->password)) {
+                return response([
+                    'status' => 'action_required',
+                    'message' => 'This account does not have a password as it was recently created by another admin. If you wish to use the same password you entered in the login form, please confirm that password here, else try again.'
+                ]);
+            }
+
             return response([
                 'message' => 'User not found'
             ], 401);

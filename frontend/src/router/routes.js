@@ -4,6 +4,7 @@ import Subscription from '../components/pages/Subscription'
 import Me from '../components/pages/account/Me'
 import ManageSubscription from '../components/pages/account/ManageSubscription'
 import Users from '../components/pages/account/Users'
+import Register from '../components/pages/register/Register'
 
 export default [
   {
@@ -11,6 +12,12 @@ export default [
     name: 'login',
     component: Login,
     meta: {displayableName: 'Login'}
+  },
+  {
+    path: '/registration',
+    name: 'registration',
+    component: Register,
+    meta: {displayableName: 'Registration',}
   },
   {
     path: '/subscription',

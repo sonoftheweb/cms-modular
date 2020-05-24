@@ -13,6 +13,10 @@ axios.defaults.withCredentials = true
 Vue.prototype.$http = axios
 Vue.prototype.$eventBus = $eventBus;
 Vue.prototype._ = lodash
+Vue.prototype.$modalMaxWidths = {
+    alerts: '450px',
+    messages: '600px'
+}
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 axios.defaults.withCredentials = true
