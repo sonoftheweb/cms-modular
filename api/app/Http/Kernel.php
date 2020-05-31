@@ -46,7 +46,6 @@ class Kernel extends HttpKernel
         ],
 
         'protected_api' => [
-            \App\Http\Middleware\ResponseInRequest::class,
             \App\Http\Middleware\Instance::class,
             \App\Http\Middleware\SubscriptionCheck::class,
         ]
@@ -71,6 +70,5 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'instance_check' => \App\Http\Middleware\Instance::class,
-        'response_in_request' => \App\Http\Middleware\ResponseInRequest::class,
     ];
 }

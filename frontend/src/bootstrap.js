@@ -68,12 +68,12 @@ axios.interceptors.response.use(response => {
     }
 
     // you do not have access to the application hence we clean all cookies and log you out
-    /*if (error.response.status === 401) {
+    if (error.response.status === 401) {
         store.dispatch('loggedOut').then(() => {
             window.location.replace("/")
         })
         return
-    }*/
+    }
     
     if (error.response.status === 401 && Object.prototype.hasOwnProperty.call(data, 'message') && data.message === 'Unauthenticated') {
         store.dispatch('loggedOut').then(() => {

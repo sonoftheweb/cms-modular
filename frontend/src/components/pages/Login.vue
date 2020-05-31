@@ -5,45 +5,34 @@
         <h2 class="thin font-weight-light mb-3">Welcome back :)</h2>
         <v-card color="grey lighten-5" light>
           <v-card-text class="px-5">
-            <v-row>
-              <v-col lg="8" md="12">
-                <v-form ref="form" lazy-validation class="mr-1">
-                  <v-text-field
-                    v-model="auth.email"
-                    type="email"
-                    label="Email address"
-                    placeholder="email@example.com"
-                    prepend-inner-icon="mdi-at"
-                    :rules="emailValidationRules"
-                    outlined
-                    dense
-                  ></v-text-field>
-                  <v-text-field
-                    v-model="auth.password"
-                    label="Password"
-                    placeholder="Password"
-                    prepend-inner-icon="mdi-key-variant"
-                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    :type="showPassword ? 'text' : 'password'"
-                    :rules="requiredFieldRule"
-                    @click:append="showPassword = !showPassword"
-                    outlined
-                    dense
-                  ></v-text-field>
-                  <v-checkbox class="mt-0" v-model="auth.remember_me" label="Remember me"></v-checkbox>
-                  <v-btn depressed large dark color="indigo" class="mr-3 float-md-left" @click="login">Let's go!</v-btn>
-                  <v-btn depressed large class="float-right warning lighten-1">Forgot Password</v-btn>
-                  <div style="clear: both"></div>
-                  <v-btn @click="$router.push('/registration')" class="mt-5" color="success" depressed large block>Register an account</v-btn>
-                </v-form>
-              </v-col>
-              <v-col lg="4" class="hidden-md-and-down">
-                <p class="pb-3 mb-10">Fill in the form to access your account.</p>
-                <h3 class="mb-4">Your first time here?</h3>
-                <p>Setup an account and access all features for free for a month.</p>
-                <v-btn large light block color="success">Get trial</v-btn>
-              </v-col>
-            </v-row>
+            <v-form ref="form" lazy-validation>
+              <v-text-field
+                v-model="auth.email"
+                type="email"
+                label="Email address"
+                placeholder="email@example.com"
+                prepend-inner-icon="mdi-at"
+                :rules="emailValidationRules"
+                outlined
+              ></v-text-field>
+              <v-text-field
+                v-model="auth.password"
+                label="Password"
+                placeholder="Password"
+                prepend-inner-icon="mdi-key-variant"
+                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="showPassword ? 'text' : 'password'"
+                :rules="requiredFieldRule"
+                @click:append="showPassword = !showPassword"
+                outlined
+              ></v-text-field>
+              <v-checkbox class="mt-0" v-model="auth.remember_me" label="Remember me"></v-checkbox>
+              <v-btn depressed large dark color="indigo" class="mr-3 float-md-left" @click="login">Let's go!</v-btn>
+              <v-btn depressed large text class="float-right">Forgot Password</v-btn>
+              <div style="clear: both"></div>
+              <v-divider class="my-8 mx-10"></v-divider>
+              <v-btn @click="showRegisterForm = true" class="mt-5" color="success" depressed large block>Register an account</v-btn>
+            </v-form>
           </v-card-text>
         </v-card>
       </v-col>
@@ -75,13 +64,18 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <con-registration-form :show="showRegisterForm" @close="showRegisterForm = false"/>
   </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
+  import ConRegistrationForm from '../forms/ConRegistrationForm'
 
   export default {
+    components: {
+      ConRegistrationForm
+    },
     computed: {
       ...mapGetters(['emailValidationRules','requiredFieldRule', 'authenticated'])
     },
@@ -101,7 +95,8 @@
         pwdConfirm: [
           v => !!v || "Confirm password",
           v => v === this.auth.password || "Passwords do not match"
-        ]
+        ],
+        showRegisterForm: false
       }
     },
     methods: {

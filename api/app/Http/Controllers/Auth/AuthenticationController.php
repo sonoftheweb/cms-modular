@@ -30,11 +30,20 @@ class AuthenticationController extends Controller
         $request = SanitizeRequestHelper::sanitizeInput($request); // @todo move this into a middleware
 
         $validateData = [
-            'instance_name' => 'required|max:20',
-            'name' => 'required|max:20',
+            'name' => 'required|min:1|max:20',
             'email' => 'required|unique:users,email|email:rfc,dns',
             'password' => 'required|min:6|max:20',
-            'password_confirmation' => 'required'
+            'confPassword' => 'required|min:6|max:20',
+            'instance.instance_name' => 'required|min:2|max:250',
+            'instance.address_line_1' => 'required|min:5|max:250',
+            'instance.address_line_2' => 'max:250',
+            'instance.city' => 'required|min:5|max:250',
+            'instance.state' => 'required|min:5|max:250',
+            'instance.country' => 'required|min:5|max:250',
+            'instance.website' => 'max:250',
+            'instance.direct_phone' => 'max:17',
+            'instance.direct_email' => 'required|min:5|max:250',
+            'user_attributes.user_job_title' => 'max:250',
         ];
         $validator = Validator::make($request->all(), $validateData);
 
@@ -47,22 +56,29 @@ class AuthenticationController extends Controller
         }
 
         // Create the instance
-        $instanceCreate = [
-            'instance_name' => $request->instance_name,
-            'direct_email' => $request->email
-        ];
-        $instance = Instance::create($instanceCreate);
+        $instance = Instance::create([
+            'instance_name' => $request->instance['instance_name'],
+            'address_line_1' => $request->instance['address_line_1'],
+            'address_line_2' => $request->instance['address_line_2'],
+            'city' => $request->instance['city'],
+            'state' => $request->instance['state'],
+            'country' => $request->instance['country'],
+            'website' => $request->instance['website'],
+            'direct_phone' => $request->instance['direct_phone'],
+            'direct_email' => $request->instance['direct_email']
+        ]);
 
         // Create the user
-        $userCreate = [
+        $user = $instance->users()->create([
             'role_id' => Config::get('constants.roles.account_manager'),
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-        ];
-        $user = $instance->users()->create($userCreate);
+        ]);
 
-        $user->attribute()->create([]);
+        $user->attribute()->create([
+            'user_job_title' => $request->user_attributes['user_job_title']
+        ]);
 
         // update instance with the new account info
         $instance->account_manager_user_id = $user->id;

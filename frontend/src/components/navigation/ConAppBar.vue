@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<v-app-bar dense app dark fixed flat clipped-left color="indigo darken-4">
+		<v-app-bar app dark fixed flat clipped-left color="indigo darken-4">
 			<v-app-bar-nav-icon v-if="authenticated" @click="toggleMenu"/>
 			<span class="title ml-3 mr-5">Fort&nbsp;<span class="font-weight-light">Con</span>
 			</span>

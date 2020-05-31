@@ -4,6 +4,7 @@
 namespace App\Helpers;
 
 
+use App\Models\Product;
 use Illuminate\Support\Facades\Cache;
 use Stripe\Plan;
 use Stripe\Stripe;
@@ -60,12 +61,7 @@ class StripeHelper
 
     public static function instanceHasPlan ()
     {
-        $plans = \App\Models\Plan::all()->toArray();
-        $plans = array_map(function ($plan) {
-            return $plan['stripe_plan_identifier'];
-        }, $plans);
-
-        return InstanceHelper::getInstance()->subscribedToPlan($plans, 'default');
+        return InstanceHelper::getInstance()->subscribed('default');
     }
 
     public static function toStripeAmountFormat(float $priceInDollars): int

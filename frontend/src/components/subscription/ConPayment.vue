@@ -2,12 +2,12 @@
   <v-dialog v-model="display" persistent max-width="600px">
     <v-card>
       <v-card-title>
-        <span class="headline">Plan Payment</span>
+        <span class="headline">Payment</span>
       </v-card-title>
       <v-card-text>
         <v-progress-linear
           :active="loading"
-          color="deep-purple accent-4"
+          color="indigo accent-4"
           indeterminate
           rounded
           height="2"
@@ -15,7 +15,7 @@
 
         <div>
           <p>
-            You have selected the <strong>{{ selectedPlan.nickname }}</strong> plan.
+            You have selected the <strong>{{ paymentMethodData.product_name }}</strong>. Your payment interval will be <strong>{{ selectedInterval }}ly</strong>.
             Please fill in the form below to process payment for your account.
           </p>
 
@@ -24,10 +24,8 @@
           <v-form ref="_make_payment">
 
             <div class="summary text-center my-7">
-              <div class="headline">{{ selectedPlan.nickname.toUpperCase() }} Plan</div>
-              <div>{{ priceFormatted(computedPrice) }} per
-                {{ tenure() }}
-                for {{ paymentMethodData.seats }} seat{{ (paymentMethodData.seats > 1) ? 's' : '' }}.
+              <div class="headline">{{ paymentMethodData.product_name }}</div>
+              <div>{{ price(paymentMethodData.price) }} per {{ selectedInterval }} for {{ paymentMethodData.seats }} seat{{ (paymentMethodData.seats > 1) ? 's' : '' }}.
               </div>
             </div>
 
@@ -37,17 +35,23 @@
                 How many seats do you plan to have available within this account?
               </v-col>
               <v-col md="6" sm="12">
-                <v-text-field min="0" type="number" v-model="paymentMethodData.seats" filled label="Seats"
-                              placeholder="1"></v-text-field>
+                <v-text-field
+                  min="1"
+                  :max="selectedProduct.metadata.max_seats"
+                  type="number"
+                  v-model="seatsBuilder"
+                  outlined label="Seats"
+                  placeholder="1"
+                />
               </v-col>
             </v-row>
             <v-row class="mb-0 pb-0">
               <v-col cols="12" md="6" sm="12">
-                <v-text-field v-model="paymentMethodData.name" filled label="Name" :rules="requiredFieldRule"
+                <v-text-field v-model="paymentMethodData.name" outlined label="Name" :rules="requiredFieldRule"
                               placeholder="John Doe"></v-text-field>
               </v-col>
               <v-col cols="12" md="6" sm="12">
-                <v-text-field v-model="paymentMethodData.email" filled label="Email address" :rules="emailValidationRules"
+                <v-text-field v-model="paymentMethodData.email" outlined label="Email address" :rules="emailValidationRules"
                               placeholder="john.doe@email.com"></v-text-field>
               </v-col>
             </v-row>
@@ -76,24 +80,26 @@
 
 <script>
   /* global Stripe */
-  import {mapGetters} from 'vuex'
+  import { mapGetters } from 'vuex'
 
   export default {
-    props: ["display", "selectedPlan"],
+    props: {
+      display: {type: Boolean, default: false},
+      selectedProduct: {type: Object, default: null},
+      selectedInterval: {type: String, default: null},
+    },
     computed: {
-      ...mapGetters(['priceFormatted', 'emailValidationRules', 'requiredFieldRule']),
-      computedPrice() {
-        let price = this.selectedPlan.tiers[0].unit_amount / 100
-        if (this.paymentMethodData.seats > this.selectedPlan.tiers[0].up_to) {
-          price += (this.selectedPlan.tiers[1].unit_amount / 100) * (this.paymentMethodData.seats - this.selectedPlan.tiers[0].up_to)
-        } else {
-          price = this.selectedPlan.tiers[0].unit_amount / 100
-        }
-        return price
+      ...mapGetters(['priceFormatted', 'emailValidationRules', 'requiredFieldRule'])
+    },
+    watch: {
+      seatsBuilder(newVal) {
+        this.paymentMethodData.seats = newVal
+        this.buildPaymentContext()
       }
     },
     data() {
       return {
+        seatsBuilder: 1,
         loading: false,
         stripe: null,
         stripeStyle: {
@@ -117,24 +123,56 @@
         paymentMethodData: {
           name: null,
           email: null,
-          seats: 1
+          seats: 1,
+          price: 0, // cents
+          plan_id: null, // plan identifier
+          plan: null,
+          product_name: null,
+          product_id: null, // prod identifier
         },
         addPaymentMethod: false
       }
     },
     methods: {
-      tenure(relative) {
-        if (relative)
-          return (this.selectedPlan.nickname === 'monthly' ? 'per month' : 'annually')
-        else
-          return (this.selectedPlan.nickname === 'monthly' ? 'month' : 'year')
+      buildPaymentContext() {
+        // lets get the plan from product
+        this.paymentMethodData.product_name = this.selectedProduct.name
+        this.paymentMethodData.product_id = this.selectedProduct.stripe_product_identifier
+        let filteredPlan = this.selectedProduct.plans.filter(plan => {
+          return plan.interval === this.selectedInterval
+        })
+        this.paymentMethodData.plan_id = filteredPlan[0].pid
+        this.paymentMethodData.plan = filteredPlan[0]
+        this.paymentMethodData.price = this.calculatePrice()
+      },
+      calculatePrice() {
+        let tier_one = this.paymentMethodData.plan.tiers[0],
+          tier_two = this.paymentMethodData.plan.tiers[1],
+          calcPrice = 0
+        
+        if (this.paymentMethodData.seats <= tier_one.up_to) {
+          calcPrice = this.paymentMethodData.seats * tier_one.flat_amount
+        } else {
+          calcPrice = tier_one.up_to * tier_one.flat_amount
+          calcPrice += (this.paymentMethodData.seats - tier_one.up_to) * tier_two.unit_amount
+        }
+        
+        return calcPrice
+      },
+      price(cents) {
+        const formatter = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 2
+        })
+        return formatter.format(cents / 100)
       },
       closePayment() {
         this.$emit('close_payment_dialog')
       },
       getIntent() {
         this.loading = true
-        this.$http.get('/api/payment/intent').then((response) => {
+        this.$http.get('/api/payment?getIntent').then((response) => {
           this.paymentIntent = response.data.intent
           this.loading = false
 
@@ -182,24 +220,28 @@
               pm: setupIntent.payment_method,
             }
 
-            this.$http.post('/api/payment/save_payment_method', data).then(response => {
+            this.$http.post('/api/payment?spm', data).then(response => {
               this.paymentMethods = response.data.pm
               let data = {
                 pm: this.paymentMethods[0],
-                plan: this.selectedPlan.nickname,
+                prod_id: this.paymentMethodData.product_id,
+                plan_id: this.paymentMethodData.plan_id,
                 seat_count: this.paymentMethodData.seats
               }
 
-              this.$http.post('/api/payment/subscribe', data)
+              this.$http.post('/api/payment?subscribe', data)
                 .then(response => {
-                  this.loading = false
+                  this.loading = true // keep loading at true
                   this.$eventBus.$emit('alert', response.data)
-                  this.$store.dispatch("fetchUserData").then(() => {
-                    this.loading = false
-                    this.$router.push('/home')
-                  })
+                  window.location.replace('/home')
                 })
+                .catch(err => {
+                  this.loading = false
+                  console.log(err)
+                })
+            }).catch(err => {
               this.loading = false
+              console.log(err)
             })
           }
         }
@@ -210,6 +252,7 @@
       this.elements = this.stripe.elements()
       this.card = this.elements.create('card')
       this.getIntent()
+      this.buildPaymentContext()
     }
   }
 </script>
@@ -217,14 +260,10 @@
 <style scoped>
   .mimic-input {
     padding: 20px 12px;
-    background: rgba(0, 0, 0, 0.06);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(16, 16, 16, 0.14);
 
-    -webkit-border-top-left-radius: 5px;
-    -webkit-border-top-right-radius: 5px;
-    -moz-border-radius-topleft: 5px;
-    -moz-border-radius-topright: 5px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
   }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!loading">
     <con-title/>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
     
@@ -19,7 +19,6 @@
         v-for="(product, index) in products"
         :key="index"
         :elevation="elevationById(product.id)"
-        v-if="product"
       >
         <v-card-title class="align-center">{{ product.name }}</v-card-title>
   
@@ -175,18 +174,22 @@
         </div>
     
         <v-card-text>
-          <v-btn class="indigo lighten-1" dark block>Register</v-btn>
+          <v-btn class="indigo lighten-1" :loading="loading" dark block @click="registerAccount(product)">Register</v-btn>
         </v-card-text>
       </v-card>
     </div>
+    <con-registration-form :show="showRegisterForm" @close="showRegisterForm = false"/>
   </div>
 </template>
 
 <script>
   import ConTitle from '../../utils/ConTitle'
+  import ConRegistrationForm from '../../forms/ConRegistrationForm'
+  
   export default {
     components: {
-      ConTitle
+      ConTitle,
+      ConRegistrationForm
     },
     computed: {
       flexClass() {
@@ -216,12 +219,14 @@
     },
     data() {
       return {
+        loading: true,
         products: [],
         selected: {
           product_id: null,
           plan: {}
         },
-        is_annual: false
+        is_annual: false,
+        showRegisterForm: false
       }
     },
     methods: {
@@ -265,17 +270,14 @@
         })
         return formatter.format(cents / 100)
       },
-      
       elevationById(id) {
         return Math.round(this.products.length / id)
       },
       fetchProducts() {
         this.$http.get('/api/products').then(response => {
           this.products = response.data.data
+          this.loading = false
         })
-      },
-      productMeta(id) {
-        console.log(id)
       }
     },
     mounted() {
