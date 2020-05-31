@@ -3,14 +3,58 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\ApiController;
+use App\Models\Product;
+use Exception;
 use http\Client\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Plan;
 use App\Http\Resources\PlanCollection;
 use App\Helpers\InstanceHelper;
+use Laravel\Cashier\Subscription;
 
 class PaymentController extends ApiController
 {
+
+    public function index(Request $request)
+    {
+        if ($request->has('getIntent'))
+            return $this->respond($this->getIntent($request));
+
+        if ($request->has('payment_methods')) // should be getPaymentController
+            $this->getPaymentMethod($request);
+
+        if ($request->has('getCurrentSubscription'))
+            return $this->getSubscriptionData($request);
+
+        return false;
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function store(Request $request)
+    {
+        if ($request->has('spm')) {
+            $this->savePaymentMethod($request);
+            return $this->getPaymentMethod($request);
+        }
+
+        if ($request->has('subscribe')) {
+            return $this->subscribe($request);
+        }
+
+        if ($request->has('updateSubscription'))
+            return $this->updateSubscription($request);
+
+        if ($request->has('cancelSubscription'))
+            return $this->cancelSubscription($request);
+
+        return false;
+    }
+
+
     /**
      * Get's all plans in DB
      *
@@ -19,7 +63,7 @@ class PaymentController extends ApiController
      */
     public function getPlans(Request $request)
     {
-        return $request->response_helper->respond(new PlanCollection(Plan::all()));
+        return $this->respond(new PlanCollection(Plan::all()));
     }
 
     /**
@@ -46,7 +90,7 @@ class PaymentController extends ApiController
             'pm' => $paymentMethods
         ];
 
-        return $request->response_helper->respond($data);
+        return $this->respond($data);
     }
 
     /**
@@ -55,49 +99,48 @@ class PaymentController extends ApiController
      * @param Request $request
      * @return mixed
      */
-    public function getIntent(Request $request)
+    private function getIntent(Request $request)
     {
-        return $request->response_helper->respond([
+        return [
             'intent' => InstanceHelper::getInstance()->createSetupIntent()
-        ]);
+        ];
     }
 
     /**
      * Save payment method to current user's instance
      *
      * @param Request $request
-     * @return mixed
+     * @return void
      */
-    public function savePaymentMethod(Request $request)
+    private function savePaymentMethod(Request $request)
     {
         InstanceHelper::getInstance()->addPaymentMethod($request->pm);
-        return $this->getPaymentMethod($request);
     }
 
     /**
      * Subscribe an instance to a plan
      *
      * @param Request $request
-     * @return mixed
+     * @return string
      */
-    public function subscribe(Request $request)
+    private function subscribe(Request $request)
     {
         try {
-            list($paymentMethod, $plan, $seats) = [$request->pm, $request->plan, $request->seat_count];
+            list($paymentMethod, $product_id, $plan_id, $seats) = [$request->pm, $request->prod_id, $request->plan_id, $request->seat_count];
 
             $instance = InstanceHelper::getInstance();
 
             //get plan by nickname
-            $plan = Plan::where('nickname', $plan)->first()->toArray();
-
-            $subscriptionBuilder = $instance->newSubscription('default', $plan['stripe_plan_identifier'])->withMetadata([
-                'account_name' => $instance->instance_name,
-                'account_email' => $instance->direct_email,
-                'account_seats' => $seats
-            ]);
+            $plan = Plan::where('stripe_plan_identifier', $plan_id)->first()->toArray();
+            $product = Product::where('stripe_product_identifier', $product_id)->first()->toArray();
 
             if (!$instance->subscribed('default')){
-                $subscriptionBuilder->quantity($seats)->create($paymentMethod['id']);
+                $instance->newSubscription('default', $plan['stripe_plan_identifier'])->withMetadata([
+                    'product' => $product['name'],
+                    'account_name' => $instance->instance_name,
+                    'account_email' => $instance->direct_email,
+                    'account_seats' => $seats
+                ])->quantity($seats)->create($paymentMethod['id']);
             }
             else {
                 $instance->subscription('default')->swap($plan->id);
@@ -106,10 +149,10 @@ class PaymentController extends ApiController
             $instance->seats = $seats;
             $instance->save();
 
-            return $request->response_helper->respondWithSuccessMessage(200, 'You have been successfully subscribed to your selected plan.');
+            return $this->respondWithSuccessMessage(200, 'You have been successfully subscribed to your selected plan.');
 
-        } catch (\Exception $e) {
-            return $request->response_helper->respondWithError($e);
+        } catch (Exception $e) {
+            return $this->respondWithError($e);
         }
 
     }
@@ -123,20 +166,21 @@ class PaymentController extends ApiController
      */
     public function getSubscriptionData(Request $request)
     {
-        return $request->response_helper->respond([
+        return $this->respond([
             'all_subscriptions' => array_filter(InstanceHelper::getInstance()->getSubscriptions(), function ($subs) {
                 return $subs['status'] !== 'active';
             }),
-            'subscription' => InstanceHelper::getInstance()->getSubscription()
+            'subscription' => InstanceHelper::getInstance()->getSubscription(),
+            'test' => InstanceHelper::getInstance()->subscribed('Gold Plan')
         ]);
     }
 
     /**
-     * Cancle subs for this account
+     * Cancel subs for this account
      *
      * @param Request $request with all params and response
      *
-     * @return Response
+     * @return JsonResponse
      */
     public function cancelSubscription(Request $request)
     {
@@ -152,7 +196,7 @@ class PaymentController extends ApiController
             'status' => 'success',
             'message' => 'You have successfully un-subscribed from the plan.'
         ];
-        return $request->response_helper->respond($resp);
+        return $this->respond($resp);
     }
 
 
@@ -161,7 +205,7 @@ class PaymentController extends ApiController
      *
      * @param Request $request with all params and response
      *
-     * @return Response
+     * @return JsonResponse
      */
     public function updateSubscription(Request $request)
     {
@@ -177,10 +221,11 @@ class PaymentController extends ApiController
                 'message' => 'There' .
                 $verb . $usersToFree . ' occupying seats to be removed. Please remove the users before you are able to free seats. Make sure that you pass the user\'s resources to another user before you delete them.'
             ];
-            return $request->response_helper->respond($resp);
+            return $this->respond($resp);
         }
 
         $instance->subscription('default')
+            ->skipTrial()
             ->updateQuantity($request->seats);
 
         $instance->update(['seats' => $request->seats]);
@@ -190,6 +235,6 @@ class PaymentController extends ApiController
             'message' => 'You have successfully altered your seat count.'
         ];
 
-        return $request->response_helper->respond($resp);
+        return $this->respond($resp);
     }
 }

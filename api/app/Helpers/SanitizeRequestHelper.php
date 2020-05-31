@@ -12,9 +12,21 @@ class SanitizeRequestHelper
     {
         $input = $request->all();
 
-        foreach ($input as $key => $value) {
-            $input[$key] = filter_var(trim($value), FILTER_SANITIZE_STRING);
+        $args = [];
+        foreach ($input as $k => $v) {
+            if (is_array($v)) {
+                $args[$k] = [
+                    'filter' => FILTER_VALIDATE_INT,
+                    'flags'  => FILTER_FORCE_ARRAY,
+                ];
+            }
+
+            if (is_string($v)) {
+                $args[$k] = FILTER_SANITIZE_ENCODED;
+            }
         }
+
+        filter_var_array($input, $args);
 
         $request->replace($input);
         return $request;

@@ -20,7 +20,7 @@
               </div>
               <div>
                 <v-icon class="mr-2 mb-3">mdi-cash-multiple</v-icon>
-                {{ priceFormatted(computedPrice()) }} billable on renewal
+                {{ price(calculatePrice()) }} billable on renewal
               </div>
               <div>
                 <v-icon class="mr-2 mb-3">mdi-clock-start</v-icon>
@@ -117,24 +117,36 @@
         let price = subscription.plan.tiers[1].unit_amount / 100
         return price * (this.seats - this.currentSubscription.quantity)
       },
-      computedPrice(subscription) {
-        subscription = (subscription) ? subscription : this.currentSubscription
-        let price = subscription.plan.tiers[0].unit_amount / 100
-        if (subscription.quantity > subscription.plan.tiers[0].up_to) {
-          price += (subscription.plan.tiers[1].unit_amount / 100) * (subscription.quantity - subscription.plan.tiers[0].up_to)
+      calculatePrice() {
+        let tier_one = this.currentSubscription.plan.tiers[0],
+          tier_two = this.currentSubscription.plan.tiers[1],
+          calcPrice = 0
+    
+        if (this.currentSubscription.quantity <= tier_one.up_to) {
+          calcPrice = this.currentSubscription.quantity * tier_one.flat_amount
         } else {
-          price = subscription.plan.tiers[0].unit_amount / 100
+          calcPrice = tier_one.up_to * tier_one.flat_amount
+          calcPrice += (this.currentSubscription.quantity - tier_one.up_to) * tier_two.unit_amount
         }
-        return price
+    
+        return calcPrice
+      },
+      price(cents) {
+        const formatter = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 2
+        })
+        return formatter.format(cents / 100)
       },
       getSubs() {
         if (!this.loading) this.loading = true
-        this.$http.get('/api/subscription').then(response => {
+        this.$http.get('/api/payment?getCurrentSubscription').then(response => {
           this.currentSubscription = response.data.subscription
           this.seats = this.currentSubscription.quantity
           this.previousSubscriptions = response.data.all_subscriptions.map((subs) => {
             return {
-              plan_name: `${this.firstLetterCaps(subs.plan.nickname)} plan, ${subs.quantity} seats, ${this.priceFormatted(this.computedPrice(subs))}`,
+              plan_name: `${this.firstLetterCaps(subs.plan.nickname)} plan, ${subs.quantity} seats, ${this.price(this.calculatePrice(subs))}`,
               start: this.computedDate(subs.current_period_start * 1000),
               end: this.computedDate(subs.current_period_end * 1000),
               status: subs.status,
@@ -169,7 +181,7 @@
           if (indefinite) {
             data.cancel_now = true
           }
-          this.$http.post('/api/subscription/cancel', data).then(response => {
+          this.$http.post('/api/payment?cancelSubscription', data).then(response => {
             this.$eventBus.$emit('alert', response.data)
             if (indefinite)
               this.$store.dispatch('loggedOut')
@@ -187,7 +199,7 @@
           })
         }
         else {
-          this.$http.post('/api/subscription/update', {seats: this.seats}).then(response => {
+          this.$http.post('/api/payment?updateSubscription', {seats: this.seats}).then(response => {
             this.$eventBus.$emit('alert', response.data)
             this.getSubs()
           })

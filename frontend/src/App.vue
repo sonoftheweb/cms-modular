@@ -2,11 +2,13 @@
   <div>
     <con-alerts :alert-data="alertData" class=""/>
     <v-app>
-      <con-app-bar v-if="authenticated"/>
+      <con-app-bar/>
       <con-menu v-if="authenticated"/>
       <v-content>
-        <v-container class="pa-10" :class="{'fill-height container': !authenticated}">
-          <router-view></router-view>
+        <v-container class="pa-10" :class="containerClass()">
+          <transition name="fade" mode="out-in">
+            <router-view></router-view>
+          </transition>
         </v-container>
       </v-content>
     </v-app>
@@ -31,6 +33,18 @@ export default {
   data: () => ({
     alertData: {}
   }),
+  methods: {
+    containerClass() {
+      let className = ''
+      if (!this.authenticated)
+        className = 'fill-height container'
+  
+      if (this.$route.name === 'registration')
+        className = ''
+      
+      return className
+    }
+  },
   mounted() {
     this.$eventBus.$on('alert', alertData => {
       this.alertData = alertData
@@ -38,3 +52,15 @@ export default {
   }
 };
 </script>
+
+<style scoped lang="scss">
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 1s;
+  }
+  
+  .fade-enter,
+  .fade-leave {
+    opacity: 0;
+  }
+</style>

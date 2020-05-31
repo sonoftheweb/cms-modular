@@ -13,6 +13,10 @@ axios.defaults.withCredentials = true
 Vue.prototype.$http = axios
 Vue.prototype.$eventBus = $eventBus;
 Vue.prototype._ = lodash
+Vue.prototype.$modalMaxWidths = {
+    alerts: '450px',
+    messages: '600px'
+}
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 axios.defaults.withCredentials = true
@@ -64,12 +68,12 @@ axios.interceptors.response.use(response => {
     }
 
     // you do not have access to the application hence we clean all cookies and log you out
-    /*if (error.response.status === 401) {
+    if (error.response.status === 401) {
         store.dispatch('loggedOut').then(() => {
             window.location.replace("/")
         })
         return
-    }*/
+    }
     
     if (error.response.status === 401 && Object.prototype.hasOwnProperty.call(data, 'message') && data.message === 'Unauthenticated') {
         store.dispatch('loggedOut').then(() => {

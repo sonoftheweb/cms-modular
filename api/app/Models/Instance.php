@@ -27,7 +27,7 @@ class Instance extends SimpleModel
 
     public function taxRates()
     {
-        return ['tax-rate-id'];
+        return ['txr_1GgR9nCS6ut62cx8XLcBLYZy'];
     }
 
     public function getSubscriptions()

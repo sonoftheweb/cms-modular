@@ -14,30 +14,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => ['response_in_request']], function () {
-    Route::get('app', 'AppController@app');
-});
+Route::get('app', 'AppController@app');
+Route::resource('products', 'Api\ProductController')->only(['index']);
 
 Route::group(['prefix' => 'auth'], function () {
     Route::post('registration', 'Auth\AuthenticationController@registerInstance');
     Route::post('login', 'Auth\AuthenticationController@login');
 });
 
-Route::group(['prefix' => 'payment', 'middleware' => ['auth:api', 'response_in_request']], function () {
-    Route::get('plans', 'PaymentController@getPlans');
-    Route::get('payment_methods', 'PaymentController@getPaymentMethod');
-    Route::get('intent', 'PaymentController@getIntent');
-    Route::post('save_payment_method', 'PaymentController@savePaymentMethod');
-    Route::get('paymentIntent', 'PaymentController@paymentIntent');
-    Route::post('subscribe', 'PaymentController@subscribe');
+Route::group(['middleware' => ['auth:api']], function () {
+    Route::resource('payment', 'PaymentController');
 });
 
 Route::group(['middleware' => ['auth:api', 'protected_api']], function () {
     Route::post('auth/logout', 'Auth\AuthenticationController@logout');
-
-    Route::get('subscription', 'PaymentController@getSubscriptionData');
-    Route::post('subscription/cancel', 'PaymentController@cancelSubscription');
-    Route::post('subscription/update', 'PaymentController@updateSubscription');
+    Route::resource('profile', 'Api\ProfileController')->only(['update']);
 
     Route::resource('users', 'UserController')->only([
         'index', 'store', 'show', 'update', 'destroy'

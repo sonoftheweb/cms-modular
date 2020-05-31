@@ -40,7 +40,7 @@ class UserController extends ApiController
             $user->fill($userData)->save();
         }
 
-        return $request->response_helper->respond(
+        return $this->respond(
             new UserResource(
                 User::firstWhere('id', Auth::id())->load(['role', 'attribute', 'instance'])
             )
@@ -49,7 +49,7 @@ class UserController extends ApiController
 
     public function roles(Request $request)
     {
-        return $request->response_helper->respond(
+        return $this->respond(
             new RoleCollection(Role::all())
         );
     }
@@ -76,7 +76,7 @@ class UserController extends ApiController
         ]);
         $user->attribute()->update($request->attribute);
 
-        return $request->response_helper->respondWithSuccessMessage(200, 'Successfully updated user.');
+        return $this->respondWithSuccessMessage(200, 'Successfully updated user.');
     }
 
     public function store(Request $request)
@@ -85,7 +85,7 @@ class UserController extends ApiController
             // let's check the number of seats available
             $managersCount = UserAsModel::where('role_id', Config::get('constants.roles.account_manager'))->count();
             if ($managersCount >= InstanceHelper::seatsAvailable()) {
-                return $request->response_helper->respond([
+                return $this->respond([
                     'status' => 'action_required',
                     'message' => 'You have reached the maximum number of admin users you may have on this account. To add more users, you would need to get more seats. Do you want to update your account seats?'
                 ]);
@@ -100,12 +100,12 @@ class UserController extends ApiController
 
         $user->attribute()->create($request->attribute);
 
-        return $request->response_helper->respondWithSuccessMessage(200, 'Successfully added user.');
+        return $this->respondWithSuccessMessage(200, 'Successfully added user.');
     }
 
     public function destroy(Request $request, $id)
     {
         User::where('id', $id)->delete();
-        return $request->response_helper->respondWithSuccessMessage(200, 'Successfully deleted user.');
+        return $this->respondWithSuccessMessage(200, 'Successfully deleted user.');
     }
 }

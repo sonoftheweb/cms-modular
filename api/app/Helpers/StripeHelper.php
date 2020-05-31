@@ -4,6 +4,7 @@
 namespace App\Helpers;
 
 
+use App\Models\Product;
 use Illuminate\Support\Facades\Cache;
 use Stripe\Plan;
 use Stripe\Stripe;
@@ -34,7 +35,6 @@ class StripeHelper
     {
         StripeHelper::stripeConnect();
         $plans = Plan::all([
-            'product' => env('STRIPE_MAIN_PRODUCT'),
             'active' => true
         ]);
 
@@ -50,9 +50,9 @@ class StripeHelper
                 'interval_count' => $plan['interval_count'],
                 'livemode' => $plan['livemode'],
                 'metadata' => ($forDb) ? json_encode($plan['metadata'], true) : $plan['metadata'],
-                'product' => $plan['product'],
+                'product_id' => $plan['product'],
                 'tiers' => ($forDb) ? json_encode($plan['tiers'], true) : $plan['tiers'],
-                'trial_period_days' => $plan['trial_period_days']
+                'trial_period_days' => ($plan['trial_period_days']) ? $plan['trial_period_days'] : 14
             ];
         }, $plans['data']);
 
@@ -61,12 +61,7 @@ class StripeHelper
 
     public static function instanceHasPlan ()
     {
-        $plans = \App\Models\Plan::all()->toArray();
-        $plans = array_map(function ($plan) {
-            return $plan['stripe_plan_identifier'];
-        }, $plans);
-
-        return InstanceHelper::getInstance()->subscribedToPlan($plans, 'default');
+        return InstanceHelper::getInstance()->subscribed('default');
     }
 
     public static function toStripeAmountFormat(float $priceInDollars): int
